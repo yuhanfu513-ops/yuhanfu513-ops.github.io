@@ -1,17 +1,17 @@
-@font-face{font-family:ZhiMangXing;src:url('assets/ZhiMangXing-Regular.ttf') format('truetype');font-display:swap}
-:root{color-scheme:dark;--ink:#e7e0d5;--muted:#aaa59d;--orange:#ff8943}
+:root{color-scheme:dark;--ink:#e7e0d5;--muted:#aaa59d;--orange:#ff8943;--font-chinese:'Songti SC','Songti TC',STSong,'Noto Serif CJK SC',serif}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:#171717;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}
+body{margin:0;min-height:100vh;background:#171717;color:var(--ink);font-family:var(--font-chinese)}
+button,input,select,textarea{font:inherit}
 a{color:inherit}
 .topbar,.bottom-bar{width:min(1440px,100%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px}
 .topbar a{text-decoration:none}.brand{font-size:15px;letter-spacing:.08em}.topbar span,.hint{color:var(--muted);font-size:13px}.topbar .back,.bottom-bar a{font-size:14px;color:var(--ink);text-decoration:none;border-bottom:1px solid #8a6b4d;padding:5px 0}
 .bottom-bar{align-items:flex-start;flex-wrap:wrap;padding-top:18px;padding-bottom:32px}.links{display:flex;gap:24px;flex-wrap:wrap}.bottom-bar a:hover,.topbar a:hover{color:#ffad6e}.intro{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
-.scene-shell{width:min(1440px,100%);margin:auto;position:relative;container-type:inline-size;background:#252525}
+.scene-shell{width:min(1440px,100%);margin:auto;position:relative;container-type:inline-size;background:#252525;isolation:isolate}
 .scene{position:relative;width:100%;aspect-ratio:8/5;overflow:hidden;background:#303030}
 .room,.shade,.layer,.marker,.reveal,.hotspot{position:absolute}
 .room{inset:0;width:100%;height:100%;object-fit:cover}
 .shade{inset:0;background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.3),rgba(0,0,0,.55));pointer-events:none}
-.layer{object-fit:fill;pointer-events:none}
+.layer{object-fit:fill;pointer-events:none;z-index:3}
 .cello-focus{left:25.9722%;top:11.4444%;width:48.125%;height:77%}
 .cello-story{left:6.9444%;top:11.4444%;width:48.125%;height:77%}
 .boots-focus{left:37.2917%;top:36.7778%;width:25.4167%;height:26.3333%}
@@ -23,10 +23,28 @@ a{color:inherit}
 .marker--boots{left:15.5556%;top:40.7778%;width:20%;height:32%}
 .marker--desk{left:60.2083%;top:26.5556%;width:38.4028%;height:41.3333%}
 .marker{pointer-events:none}
-.story{position:absolute;color:#fff;font-family:'Songti SC','Songti TC',STSong,'Noto Serif CJK SC',serif;font-size:1.7361cqw;line-height:2.0833cqw;width:38.8889%;z-index:2;overflow-wrap:anywhere}
+.story{position:absolute;color:#fff;font-family:var(--font-chinese);font-size:1.7361cqw;line-height:1.55;width:38.8889%;z-index:2;overflow-wrap:anywhere}
 .story--cello{left:50%;top:31.6667%}.story--boots{left:52.2917%;top:26.3333%}.story--laptop{left:51.1806%;top:28.8889%}
-.story h1{font:400 5.5556cqw/3.8889cqw ZhiMangXing,STKaiti,KaiTi,cursive;white-space:nowrap;margin:0 0 1.5278cqw}.story--cello h1{color:#ff8943}.story--boots h1{color:#e45500;margin-bottom:2.0833cqw}.story--laptop h1{color:#fe6910}
+.story h1{font:400 4.5cqw/1.2 var(--font-chinese);white-space:nowrap;margin:0 0 1.5278cqw}.story--cello h1{color:#ff8943}.story--boots h1{color:#e45500;margin-bottom:2.0833cqw}.story--laptop h1{color:#fe6910}
 .story p{margin:0 0 1.3889cqw}.story p:last-child{margin-bottom:0}
-.hotspot{z-index:2;border:1px solid transparent;border-radius:12px;outline-offset:3px}.hotspot:hover,.hotspot:focus-visible{border-color:#ffb078;background:#ff9c5120;outline:2px solid #ffc48d}
-.hotspot--cello{left:34%;top:30%;width:10%;height:34%}.hotspot--boots{left:20%;top:49%;width:10%;height:18%}.hotspot--laptop{left:76%;top:32%;width:18%;height:30%}
+.hotspot{z-index:4;border-radius:50%;outline-offset:4px;text-decoration:none;display:flex;align-items:flex-end;justify-content:center;-webkit-tap-highlight-color:transparent}
+.hotspot span{font-size:clamp(12px,1.1cqw,16px);white-space:nowrap;background:#171717e8;padding:6px 12px;border-radius:20px;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
+.hotspot:focus-visible{outline:2px solid #ffc48d}
+.hotspot:hover span,.hotspot:focus-visible span{opacity:1;transform:translateY(0)}
+.hotspot--cello{left:32%;top:29%;width:14%;height:38%}.hotspot--boots{left:19%;top:45%;width:13%;height:24%}.hotspot--laptop{left:76%;top:36%;width:15%;height:24%}
+.color-region{pointer-events:none;opacity:0;transition:opacity .65s ease;mask-image:var(--region-mask);-webkit-mask-image:var(--region-mask)}
+.color-region.is-lit{opacity:1}
+.color-region--cello{--region-mask:radial-gradient(ellipse 6.5% 18% at 38.5% 48%,#000 74%,transparent 100%)}
+.color-region--boots{--region-mask:radial-gradient(ellipse 5.5% 10% at 25% 58%,#000 70%,transparent 100%)}
+.color-region--laptop{--region-mask:radial-gradient(ellipse 9% 13% at 83% 47%,#000 70%,transparent 100%)}
+.explore-progress{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+.story-window{position:absolute;inset:0 0 0 32%;z-index:2;overflow:hidden;pointer-events:none}
+.story-window .story{left:26.4706%;width:57.1896%;pointer-events:auto}
+.story-window .story--boots{left:29.8407%;top:22%}
+.story-window .story--laptop{left:28.2068%;top:24%}
+.story-window.is-loading .story{visibility:hidden}
+.story-window.is-revealing .story{animation:story-emerge 1.45s cubic-bezier(.16,1,.3,1) both}
+@keyframes story-emerge{from{transform:translateX(-155%);opacity:0}20%{opacity:1}to{transform:translateX(0);opacity:1}}
 @media(max-width:700px){.topbar,.bottom-bar{padding:16px 20px}.topbar span{display:none}.story{position:static;width:auto;padding:26px 22px 30px;font-size:17px;line-height:1.8;background:#1c1c1c}.story h1{font-size:46px;line-height:1;margin:0 0 20px;white-space:normal}.story p{margin:0 0 14px}.story p:last-child{margin-bottom:0}.links{gap:16px}.hint{line-height:1.5}}
+@media(max-width:700px){.story-window{position:relative;inset:auto;overflow:hidden}.story-window .story{width:auto}.story-window.is-revealing .story{animation-name:story-emerge-mobile}.story h1{font-size:36px;line-height:1.3}@keyframes story-emerge-mobile{from{transform:translateY(-60px);opacity:0}to{transform:translateY(0);opacity:1}}}
+@media(prefers-reduced-motion:reduce){.color-region,.hotspot span{transition:none}.story-window.is-revealing .story{animation:none}}

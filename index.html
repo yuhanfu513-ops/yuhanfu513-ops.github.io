@@ -1,4 +1,31 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="在房间里探索付与涵 Bill 的故事。"><title>付与涵 Bill · 探索我的房间</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="topbar"><a class="brand" href="index.html">付与涵 BILL</a><span>一个房间，三段成长经历</span></header>
-<main><div class="scene-shell"><div class="scene"><img class="room" src="assets/room.png" alt="一间灰色线稿房间，窗前放着大提琴，左边有球鞋，右边是书桌和电脑。"><a class="hotspot hotspot--cello" href="cello-focus.html" aria-label="探索大提琴"></a><a class="hotspot hotspot--boots" href="boots-focus.html" aria-label="探索红色球鞋"></a><a class="hotspot hotspot--laptop" href="laptop-focus.html" aria-label="探索苹果电脑"></a></div></div>
-<div class="bottom-bar"><p class="intro">点击房间里的物品，打开一段故事。<br><span class="hint">也可以从这里开始探索 →</span></p><nav class="links" aria-label="选择一件物品"><a href="cello-focus.html">大提琴</a><a href="boots-focus.html">红色球鞋</a><a href="laptop-focus.html">苹果电脑</a></nav></div></main></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="在房间里探索付与涵 Bill 的故事。">
+  <title>付与涵 Bill · 探索我的房间</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="explore.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">付与涵 BILL</a><span>一个房间，三段成长经历</span></header>
+  <main>
+    <div class="scene-shell">
+      <div class="scene room-explore">
+        <img class="room" src="assets/room.png" alt="一间灰色线稿房间，窗前放着大提琴，左边有球鞋，右边是书桌和电脑。">
+        <img class="room color-region color-region--cello" data-region="cello" src="assets/room-color.png" alt="" aria-hidden="true">
+        <img class="room color-region color-region--boots" data-region="boots" src="assets/room-color.png" alt="" aria-hidden="true">
+        <img class="room color-region color-region--laptop" data-region="laptop" src="assets/room-color.png" alt="" aria-hidden="true">
+        <a class="hotspot hotspot--cello" href="cello-story.html" data-object="cello" aria-label="探索大提琴"><span>大提琴</span></a>
+        <a class="hotspot hotspot--boots" href="boots-story.html" data-object="boots" aria-label="探索红色球鞋"><span>红色球鞋</span></a>
+        <a class="hotspot hotspot--laptop" href="laptop-story.html" data-object="laptop" aria-label="探索苹果电脑"><span>苹果电脑</span></a>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <p class="intro">点击房间里的大提琴、球鞋或电脑，打开一段故事。<br><span class="hint">每一次探索，都会让房间亮起一部分。</span></p>
+      <p class="explore-progress" aria-live="polite">已点亮 <span data-progress>0</span> / 3</p>
+    </div>
+  </main>
+</body>
+</html>
