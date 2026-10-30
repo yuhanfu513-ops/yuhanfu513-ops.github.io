@@ -63,14 +63,23 @@
       if (navigating) return;
       rememberObject();
       if (openSeparately) return;
-      navigating = true;
-      const region = document.querySelector(`[data-region-preview="${link.dataset.object}"]`);
-      const colorReady = region ? region.decode().catch(() => {}) : Promise.resolve();
-      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      Promise.race([colorReady, new Promise(resolve => setTimeout(resolve, 1200))])
-        .then(() => setTimeout(() => location.assign(link.href), reduceMotion ? 0 : 650));
+      const panel = document.querySelector(`[data-panel="${link.dataset.object}"]`);
+      if (!panel) return;
+      panel.hidden = false;
+      const object = panel.querySelector('.story-object-preview');
+      object.decode().catch(() => {}).then(() => loadFullImage(object.nextElementSibling));
+      panel.querySelector('.close-story').focus();
     });
   });
+
+  function closeStory() {
+    const panel = document.querySelector('.story-panel:not([hidden])');
+    if (!panel) return;
+    panel.hidden = true;
+    document.querySelector(`[data-object="${panel.dataset.panel}"]`)?.focus();
+  }
+  document.querySelectorAll('.close-story').forEach(button => button.addEventListener('click', closeStory));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeStory(); });
 
   window.addEventListener('pageshow', () => {
     navigating = false;

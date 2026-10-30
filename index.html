@@ -10,7 +10,6 @@
   <script src="explore.js" defer></script>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="index.html">付与涵 BILL</a><span>一个房间，三段成长经历</span></header>
   <main>
     <div class="scene-shell">
       <div class="scene room-explore">
@@ -26,10 +25,7 @@
         <a class="hotspot hotspot--boots" href="boots-story.html" data-object="boots" aria-label="探索红色球鞋"><span>红色球鞋</span></a>
         <a class="hotspot hotspot--laptop" href="laptop-story.html" data-object="laptop" aria-label="探索苹果电脑"><span>苹果电脑</span></a>
       </div>
-    </div>
-    <div class="bottom-bar">
-      <p class="intro">点击房间里的大提琴、球鞋或电脑，打开一段故事。<br><span class="hint">每一次探索，都会让房间亮起一部分。</span></p>
-      <p class="explore-progress" aria-live="polite">已点亮 <span data-progress>0</span> / 3</p>
+      <section class="story-panel" data-panel="cello" hidden role="dialog" aria-modal="true" aria-label="cello story"><button class="close-story" type="button" aria-label="关闭故事">×</button><img class="layer story-object-preview object-preview cello-story" src="assets/cello-preview.png" alt=""><img class="layer progressive-full cello-story" data-full-src="assets/cello.png" alt="" aria-hidden="true"><div class="story-window is-revealing"><article class="story story--cello"><h1>曾经的理想</h1><p>12岁之前，大提琴几乎占满了我的时间。我曾经想成为一名职业大提琴演奏家，也想考进音乐附中。</p><p>后来，我发现自己的能力和当时的条件还不足以支撑这条路。同时，我也找到了更想做的事，于是放下了这个目标。</p><p>我发现，自己更喜欢创造一些东西，让别人感到幸福。现在，我想走向工业设计和产品设计。</p></article></div></section><section class="story-panel" data-panel="boots" hidden role="dialog" aria-modal="true" aria-label="boots story"><button class="close-story" type="button" aria-label="关闭故事">×</button><img class="layer story-object-preview object-preview boots-story" src="assets/boots-preview.png" alt=""><img class="layer progressive-full boots-story" data-full-src="assets/boots.png" alt="" aria-hidden="true"><div class="story-window is-revealing"><article class="story story--boots"><h1>红色的球鞋</h1><p>这是我自己买的第一双真心觉得好看的足球鞋。当时没有想太多，只觉得它很帅。</p><p>它陪我度过了很难踢上球的那两年。在学校，我很难和身边的人合得来，也遭遇了队友的排斥。我没有参加过任何一场校队比赛，连娱乐比赛也很少有机会加入。</p><p>穿了一年多后，鞋底坏了。我专门找了一个能发光的鞋柜，把它收藏起来。</p><p>鞋底坏了，这双鞋却被我留了下来。</p></article></div></section><section class="story-panel" data-panel="laptop" hidden role="dialog" aria-modal="true" aria-label="laptop story"><button class="close-story" type="button" aria-label="关闭故事">×</button><img class="layer story-object-preview object-preview laptop-story" src="assets/laptop-preview.png" alt=""><img class="layer progressive-full laptop-story" data-full-src="assets/laptop.png" alt="" aria-hidden="true"><div class="story-window is-revealing"><article class="story story--laptop"><h1>第一次创造</h1><p>去探月之前，原来的电脑已经不够用，难以完成学校里的各项事务。我向父亲要了这台苹果电脑。</p><p>一位很擅长这方面的学长，教我购买 API、订阅 AI 工具，也带我学会用 AI 做网页。</p><p>第一次尝试 vibe coding，我用 DeepSeek 的 API 做了一个小游戏。这件事颠覆了我当时的认知，也让我开始了解互联网和 AI。</p><p>从使用电脑，到尝试创造自己的东西。</p></article></div></section>
     </div>
   </main>
 </body>
