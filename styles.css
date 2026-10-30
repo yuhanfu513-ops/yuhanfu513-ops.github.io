@@ -56,7 +56,7 @@ a{color:inherit}
 @media(prefers-reduced-motion:reduce){.progressive-full,.color-region,.hotspot span{transition:none}.story-window.is-revealing .story{animation:none}}
 body{display:grid;place-items:center;min-height:100vh}
 main{width:100%}
-.story-panel{position:absolute;inset:0;z-index:10;overflow:hidden}
+.story-panel{position:absolute;inset:0;z-index:10;overflow:hidden;background:radial-gradient(ellipse 45% 48% at 50% 50%,transparent 68%,rgba(0,0,0,.5) 100%);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .story-panel .story{text-shadow:0 2px 6px #000,0 0 14px #000}
 .story-panel[hidden]{display:none}
 .story-panel .story-window{inset:0 0 0 32%;position:absolute}
