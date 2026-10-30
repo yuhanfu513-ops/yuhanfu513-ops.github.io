@@ -4,6 +4,14 @@
   let explored = new Set();
   let navigating = false;
 
+  function loadFullImage(image) {
+    if (!image || image.src) return;
+    image.src = image.dataset.fullSrc;
+    image.decode().then(() => image.classList.add('is-ready')).catch(() => {
+      // The preview stays visible if the larger image cannot load.
+    });
+  }
+
   function restoreProgress() {
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
@@ -15,6 +23,15 @@
   }
 
   function renderProgress() {
+    document.querySelectorAll('[data-region-preview]').forEach(preview => {
+      const lit = explored.has(preview.dataset.regionPreview);
+      preview.classList.toggle('is-lit', lit);
+      if (lit && !preview.src) {
+        preview.src = preview.dataset.previewSrc;
+        const full = document.querySelector(`[data-region="${preview.dataset.regionPreview}"]`);
+        preview.decode().then(() => loadFullImage(full)).catch(() => {});
+      }
+    });
     document.querySelectorAll('[data-region]').forEach(region => {
       region.classList.toggle('is-lit', explored.has(region.dataset.region));
     });
@@ -47,7 +64,7 @@
       rememberObject();
       if (openSeparately) return;
       navigating = true;
-      const region = document.querySelector(`[data-region="${link.dataset.object}"]`);
+      const region = document.querySelector(`[data-region-preview="${link.dataset.object}"]`);
       const colorReady = region ? region.decode().catch(() => {}) : Promise.resolve();
       const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       Promise.race([colorReady, new Promise(resolve => setTimeout(resolve, 1200))])
@@ -62,12 +79,19 @@
   window.addEventListener('storage', restoreProgress);
   restoreProgress();
 
+  document.querySelectorAll('.room-preview').forEach(preview => {
+    preview.decode().catch(() => {}).then(() => {
+      requestAnimationFrame(() => loadFullImage(preview.nextElementSibling));
+    });
+  });
+
   const story = document.querySelector('.story-window');
-  const object = document.querySelector('.story-object');
+  const object = document.querySelector('.story-object-preview');
   if (story && object) {
     story.classList.add('is-loading');
     // Wait for the foreground object so the text can emerge from behind it.
     object.decode().catch(() => {}).then(() => {
+      loadFullImage(object.nextElementSibling);
       requestAnimationFrame(() => {
         story.classList.remove('is-loading');
         story.classList.add('is-revealing');
