@@ -31,7 +31,7 @@ a{color:inherit}
 .story h1{font:400 4.5cqw/1.2 var(--font-chinese);white-space:nowrap;margin:0 0 1.5278cqw}.story--cello h1{color:#ff8943}.story--boots h1{color:#e45500;margin-bottom:2.0833cqw}.story--laptop h1{color:#fe6910}
 .story p{margin:0 0 1.3889cqw}.story p:last-child{margin-bottom:0}
 .hotspot{z-index:4;border-radius:50%;outline-offset:4px;text-decoration:none;display:flex;align-items:flex-end;justify-content:center;-webkit-tap-highlight-color:transparent}
-.hotspot span{font-size:clamp(12px,1.1cqw,16px);white-space:nowrap;background:#171717e8;padding:6px 12px;border-radius:20px;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
+.hotspot span{font-size:clamp(12px,1.1cqw,16px);white-space:nowrap;padding:6px 12px;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
 .hotspot:focus-visible{outline:2px solid #ffc48d}
 .hotspot:hover span,.hotspot:focus-visible span{opacity:1;transform:translateY(0)}
 .hotspot--cello{left:32%;top:29%;width:14%;height:38%}.hotspot--boots{left:19%;top:45%;width:13%;height:24%}.hotspot--laptop{left:76%;top:36%;width:15%;height:24%}
@@ -58,7 +58,6 @@ body{display:grid;place-items:center;min-height:100vh}
 main{width:100%}
 .story-panel{position:absolute;inset:0;z-index:10;overflow:hidden;background:radial-gradient(ellipse 45% 48% at 50% 50%,transparent 68%,rgba(0,0,0,.5) 100%);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .55s ease}
 .story-panel.is-open{opacity:1}
-.story-panel .story{text-shadow:0 2px 6px #000,0 0 14px #000}
 .story-panel[hidden]{display:none}
 .story-panel .story-window{inset:0 0 0 32%;position:absolute}
 .close-story{position:absolute;z-index:5;right:2%;top:2%;width:44px;height:44px;border:0;border-radius:50%;background:#171717aa;color:white;font-size:32px;line-height:1;cursor:pointer}
