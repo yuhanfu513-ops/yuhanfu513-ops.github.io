@@ -3,6 +3,8 @@
   const objects = ['cello', 'boots', 'laptop'];
   let explored = new Set();
   let navigating = false;
+  let openingFrame = 0;
+  let closeTimer = 0;
 
   function loadFullImage(image) {
     if (!image || image.src) return;
@@ -65,7 +67,11 @@
       if (openSeparately) return;
       const panel = document.querySelector(`[data-panel="${link.dataset.object}"]`);
       if (!panel) return;
+      clearTimeout(closeTimer);
       panel.hidden = false;
+      openingFrame = requestAnimationFrame(() => {
+        openingFrame = requestAnimationFrame(() => panel.classList.add('is-open'));
+      });
       const object = panel.querySelector('.story-object-preview');
       object.decode().catch(() => {}).then(() => loadFullImage(object.nextElementSibling));
       panel.querySelector('.close-story').focus();
@@ -74,9 +80,18 @@
 
   function closeStory() {
     const panel = document.querySelector('.story-panel:not([hidden])');
-    if (!panel) return;
-    panel.hidden = true;
-    document.querySelector(`[data-object="${panel.dataset.panel}"]`)?.focus();
+    if (!panel || panel.dataset.closing) return;
+    panel.dataset.closing = 'true';
+    cancelAnimationFrame(openingFrame);
+    const wasOpen = panel.classList.contains('is-open');
+    panel.classList.remove('is-open');
+    const finish = () => {
+      panel.hidden = true;
+      delete panel.dataset.closing;
+      document.querySelector(`[data-object="${panel.dataset.panel}"]`)?.focus();
+    };
+    if (!wasOpen || matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
+    else closeTimer = setTimeout(finish, 550);
   }
   document.querySelectorAll('.close-story').forEach(button => button.addEventListener('click', closeStory));
   document.addEventListener('keydown', event => { if (event.key === 'Escape') closeStory(); });
