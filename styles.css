@@ -93,3 +93,10 @@ main{width:100%}
 .help-item+.help-item{margin-top:1.3em}
 @media(max-width:700px){.help-content{width:auto;padding:70px 24px 36px;font-size:16px}.help-content h1{margin-bottom:24px}.help-panel .close-story{position:absolute}}
 @media(prefers-reduced-motion:reduce){.help-label{transition:none}}
+
+/* Soft, gently breathing color boundaries around the explored objects. */
+.room-explore .color-region{clip-path:none;mask-image:var(--bubble-mask);-webkit-mask-image:var(--bubble-mask);mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}
+.room-explore .color-region--cello{--bubble-mask:url("assets/bubble-cello.svg")}
+.room-explore .color-region--boots{--bubble-mask:url("assets/bubble-boots.svg")}
+.room-explore .color-region--laptop{--bubble-mask:url("assets/bubble-laptop.svg")}
+@media(prefers-reduced-motion:reduce){.room-explore .color-region--cello{--bubble-mask:url("assets/bubble-cello-static.svg")}.room-explore .color-region--boots{--bubble-mask:url("assets/bubble-boots-static.svg")}.room-explore .color-region--laptop{--bubble-mask:url("assets/bubble-laptop-static.svg")}}
