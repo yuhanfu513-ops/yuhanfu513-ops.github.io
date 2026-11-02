@@ -152,14 +152,14 @@
     boots: [[21.6,52],[23.8,50.5],[28.3,50.5],[28.3,57],[26.2,62],[21.6,62]],
     laptop: [[81.8,41.5],[85.8,42.5],[84.7,48.8],[85.5,50],[80.3,50.4],[77.2,48.2],[80.3,47.5]]
   };
-  let hover = null, pointer = null, points = [], frame = 0;
+  let hover = null, lastPointer = null, points = [], frame = 0;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   function wake() { if (!frame) frame = requestAnimationFrame(paint); }
   function paint(now) {
     frame = 0;
     const w = canvas.width, h = canvas.height;
     ctx.clearRect(0,0,w,h);
-    points = points.filter(p => now-p.t < 1100);
+    points = points.filter(p => now-p.t < 420);
     if (!drawing.complete || !drawing.naturalWidth) return;
     ctx.globalCompositeOperation = 'source-over';
     if (hover) {
@@ -167,18 +167,24 @@
       shapes[hover].forEach(([x,y],i) => i ? ctx.lineTo(x*w/100,y*h/100) : ctx.moveTo(x*w/100,y*h/100));
       ctx.closePath();ctx.fill();
     }
-    const spots = reduced.matches ? [] : points;
-    if (pointer) spots.push({...pointer,t:now,current:true});
-    for (const p of spots) {
-      const alpha = p.current ? 1 : Math.pow(1-(now-p.t)/1100,2);
-      const r = w*.045;
-      const g = ctx.createRadialGradient(p.x*w,p.y*h,0,p.x*w,p.y*h,r);
-      g.addColorStop(0,'rgba(255,255,255,'+alpha+')');
-      g.addColorStop(.45,'rgba(255,255,255,'+alpha*.85+')');
-      g.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.fillStyle=g;ctx.fillRect(p.x*w-r,p.y*h-r,r*2,r*2);
+    // Short strokes fade together over time, leaving no mark when the pointer rests.
+    if (!reduced.matches && points.length > 1) {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = w * .025;
+      ctx.filter = `blur(${Math.max(1, w * .003)}px)`;
+      for (let i = 1; i < points.length; i++) {
+        const p = points[i], previous = points[i - 1];
+        if (p.start) continue;
+        const life = Math.max(0, 1 - (now - p.t) / 420);
+        ctx.strokeStyle = `rgba(255,255,255,${life * life * .75})`;
+        ctx.beginPath();
+        ctx.moveTo(previous.x * w, previous.y * h);
+        ctx.lineTo(p.x * w, p.y * h);
+        ctx.stroke();
+      }
+      ctx.filter = 'none';
     }
-    points = points.filter(p=>!p.current);
     ctx.globalCompositeOperation='source-in';
     ctx.drawImage(drawing,0,0,w,h);
     ctx.globalCompositeOperation='source-over';
@@ -189,13 +195,19 @@
     canvas.height=Math.round(canvas.width*993/1584);wake();
   }).observe(scene);
   scene.addEventListener('pointermove',e=>{
-    if(e.pointerType==='touch') return;
-    const b=scene.getBoundingClientRect();
-    pointer={x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height};
-    if(!reduced.matches) points.push({...pointer,t:performance.now()});
-    points=points.slice(-90);wake();
+    if(e.pointerType==='touch' || reduced.matches) return;
+    const b=scene.getBoundingClientRect(), now=performance.now();
+    const next={x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height,t:now};
+    if (lastPointer && Math.hypot(next.x-lastPointer.x,next.y-lastPointer.y) > 0.0005) {
+      if (now-lastPointer.t > 120) points.push({...lastPointer,t:now,start:true});
+      else if (!points.length) points.push({...lastPointer,start:true});
+      points.push(next);
+      points=points.slice(-60);
+      wake();
+    }
+    lastPointer=next;
   });
-  scene.addEventListener('pointerleave',()=>{pointer=null;hover=null;wake()});
+  scene.addEventListener('pointerleave',()=>{lastPointer=null;hover=null;wake()});
   scene.querySelectorAll('[data-object]').forEach(link=>{
     const show=()=>{hover=link.dataset.object;wake()};
     const hide=()=>{hover=null;wake()};
@@ -203,7 +215,7 @@
     link.addEventListener('pointerleave',hide);
     link.addEventListener('focus',show);
     link.addEventListener('blur',hide);
-    link.addEventListener('click',()=>{pointer=null;points=[];hover=null;wake()});
+    link.addEventListener('click',()=>{lastPointer=null;points=[];hover=null;wake()});
   });
   drawing.onload=wake;
 })();
