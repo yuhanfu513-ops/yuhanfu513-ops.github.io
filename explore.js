@@ -192,3 +192,12 @@
   });
   drawing.onload=wake;
 })();
+
+// Shared scene also handles bookmarked story links.
+(() => {
+  const item = new URLSearchParams(location.search).get('story');
+  if (['cello','boots','laptop'].includes(item)) {
+    document.querySelector('[data-object="'+item+'"]')?.click();
+    history.replaceState(null, '', location.pathname);
+  }
+})();
