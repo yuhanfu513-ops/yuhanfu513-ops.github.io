@@ -78,3 +78,18 @@ main{width:100%}
 .hotspot--cello{left:34.3%;top:30%;width:7.1%;height:31%}
 .hotspot--boots{left:21.6%;top:50.5%;width:6.7%;height:11.5%;border-radius:0}
 .hotspot--laptop{left:77.2%;top:41.5%;width:8.6%;height:8.9%;border-radius:0}
+
+.help-trigger{position:absolute;z-index:5;top:2%;right:2%;display:flex;align-items:center;gap:10px;padding:5px;border:0;background:transparent;color:#d7e1df;cursor:pointer;font-family:var(--font-chinese)}
+.help-trigger[hidden]{display:none}
+.help-icon{display:grid;place-items:center;width:34px;height:34px;border:2px solid currentColor;border-radius:50%;font:600 22px/1 sans-serif}
+.help-label{opacity:0;transform:translateX(6px);transition:opacity .2s ease,transform .2s ease;font-size:15px;white-space:nowrap}
+.help-trigger:hover .help-label,.help-trigger:focus-visible .help-label{opacity:1;transform:translateX(0)}
+.help-trigger:focus-visible{outline:2px solid #ffc48d;outline-offset:4px;border-radius:4px}
+.help-panel{overflow-y:auto}
+.help-content{width:min(660px,72%);margin:0 auto;padding:7% 0 6%;color:#fff;font-family:var(--font-chinese);font-size:clamp(15px,1.45cqw,21px);line-height:1.65}
+.help-content h1{margin:0 0 1.7cqw;color:var(--orange);font:400 clamp(32px,4.5cqw,64px)/1.2 var(--font-chinese)}
+.help-content h2{margin:0 0 .4em;color:var(--orange);font-size:1.15em;font-weight:400}
+.help-content p{margin:0}
+.help-item+.help-item{margin-top:1.3em}
+@media(max-width:700px){.help-content{width:auto;padding:70px 24px 36px;font-size:16px}.help-content h1{margin-bottom:24px}.help-panel .close-story{position:absolute}}
+@media(prefers-reduced-motion:reduce){.help-label{transition:none}}

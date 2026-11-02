@@ -40,6 +40,8 @@
     document.querySelectorAll('[data-object]').forEach(link => {
       link.classList.toggle('is-explored', explored.has(link.dataset.object));
     });
+    const help = document.querySelector('.help-trigger');
+    if (help) help.hidden = !objects.every(item => explored.has(item));
     const progress = document.querySelector('[data-progress]');
     if (progress) progress.textContent = explored.size;
   }
@@ -78,6 +80,18 @@
     });
   });
 
+  const helpTrigger = document.querySelector('.help-trigger');
+  helpTrigger?.addEventListener('click', () => {
+    const panel = document.querySelector('[data-panel="help"]');
+    if (!panel || !objects.every(item => explored.has(item))) return;
+    clearTimeout(closeTimer);
+    panel.hidden = false;
+    openingFrame = requestAnimationFrame(() => {
+      openingFrame = requestAnimationFrame(() => panel.classList.add('is-open'));
+    });
+    panel.querySelector('.close-story').focus();
+  });
+
   function closeStory() {
     const panel = document.querySelector('.story-panel:not([hidden])');
     if (!panel || panel.dataset.closing) return;
@@ -88,7 +102,8 @@
     const finish = () => {
       panel.hidden = true;
       delete panel.dataset.closing;
-      document.querySelector(`[data-object="${panel.dataset.panel}"]`)?.focus();
+      if (panel.dataset.panel === 'help') helpTrigger?.focus();
+      else document.querySelector(`[data-object="${panel.dataset.panel}"]`)?.focus();
     };
     if (!wasOpen || matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
     else closeTimer = setTimeout(finish, 550);
