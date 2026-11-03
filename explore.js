@@ -102,6 +102,7 @@
     const finish = () => {
       panel.hidden = true;
       delete panel.dataset.closing;
+      document.dispatchEvent(new Event('story-closed'));
       if (panel.dataset.panel === 'help') helpTrigger?.focus();
       else document.querySelector(`[data-object="${panel.dataset.panel}"]`)?.focus();
     };
@@ -145,11 +146,11 @@
   if (!canvas) return;
   const scene = canvas.parentElement;
   const shell = scene.closest('.scene-shell');
-  const panelTrail = document.createElement('canvas');
-  panelTrail.className = 'detail-trail-panel';
-  panelTrail.setAttribute('aria-hidden', 'true');
-  shell.appendChild(panelTrail);
-  const panelCtx = panelTrail.getContext('2d');
+  const storyCursor = document.createElement('div');
+  storyCursor.className = 'story-cursor';
+  storyCursor.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(storyCursor);
+  document.addEventListener('story-closed', () => storyCursor.classList.remove('is-visible'));
   const ctx = canvas.getContext('2d');
   const drawing = new Image();
   drawing.src = 'assets/revised-detail-hd.jpg';
@@ -194,19 +195,32 @@
     ctx.globalCompositeOperation='source-in';
     ctx.drawImage(drawing,0,0,w,h);
     ctx.globalCompositeOperation='source-over';
-    panelCtx.clearRect(0, 0, w, h);
-    panelCtx.drawImage(canvas, 0, 0);
     if (points.length) wake();
   }
   new ResizeObserver(() => {
     canvas.width=Math.min(1584,Math.round(scene.clientWidth*devicePixelRatio));
     canvas.height=Math.round(canvas.width*993/1584);
-    panelTrail.width=canvas.width;
-    panelTrail.height=canvas.height;
     wake();
   }).observe(scene);
+  function updateCursor(e) {
+    const panel = shell.querySelector('.story-panel:not([hidden])');
+    const item = e.target.closest('[data-object]');
+    const useCircle = !reduced.matches && e.pointerType !== 'touch' && (panel || item);
+    storyCursor.classList.toggle('is-visible', !!useCircle);
+    if (useCircle) {
+      const title = panel?.querySelector('h1') || shell.querySelector(`[data-panel="${item.dataset.object}"] h1`);
+      if (title) storyCursor.style.color = getComputedStyle(title).color;
+      storyCursor.style.left = `${e.clientX}px`;
+      storyCursor.style.top = `${e.clientY}px`;
+      points = [];
+      lastPointer = null;
+      wake();
+    }
+    return !!useCircle;
+  }
   shell.addEventListener('pointermove',e=>{
     if(e.pointerType==='touch' || reduced.matches) return;
+    if (updateCursor(e)) return;
     const b=scene.getBoundingClientRect(), now=performance.now();
     const next={x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height,t:now};
     if (lastPointer && Math.hypot(next.x-lastPointer.x,next.y-lastPointer.y) > 0.0005) {
@@ -218,7 +232,11 @@
     }
     lastPointer=next;
   });
-  shell.addEventListener('pointerleave',()=>{lastPointer=null;hover=null;wake()});
+  shell.addEventListener('pointerleave',()=>{storyCursor.classList.remove('is-visible');lastPointer=null;hover=null;wake()});
+  shell.addEventListener('pointerover', updateCursor);
+  shell.addEventListener('click', e => {
+    if (e.detail) requestAnimationFrame(() => updateCursor(e));
+  });
   scene.querySelectorAll('[data-object]').forEach(link=>{
     const show=()=>{hover=link.dataset.object;wake()};
     const hide=()=>{hover=null;wake()};
