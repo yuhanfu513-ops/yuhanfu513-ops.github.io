@@ -144,6 +144,12 @@
   const canvas = document.querySelector('.detail-trail');
   if (!canvas) return;
   const scene = canvas.parentElement;
+  const shell = scene.closest('.scene-shell');
+  const panelTrail = document.createElement('canvas');
+  panelTrail.className = 'detail-trail-panel';
+  panelTrail.setAttribute('aria-hidden', 'true');
+  shell.appendChild(panelTrail);
+  const panelCtx = panelTrail.getContext('2d');
   const ctx = canvas.getContext('2d');
   const drawing = new Image();
   drawing.src = 'assets/revised-detail-hd.jpg';
@@ -171,7 +177,7 @@
     if (!reduced.matches && points.length > 1) {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.lineWidth = w * .025;
+      ctx.lineWidth = w * .045;
       ctx.filter = `blur(${Math.max(1, w * .003)}px)`;
       for (let i = 1; i < points.length; i++) {
         const p = points[i], previous = points[i - 1];
@@ -188,13 +194,18 @@
     ctx.globalCompositeOperation='source-in';
     ctx.drawImage(drawing,0,0,w,h);
     ctx.globalCompositeOperation='source-over';
+    panelCtx.clearRect(0, 0, w, h);
+    panelCtx.drawImage(canvas, 0, 0);
     if (points.length) wake();
   }
   new ResizeObserver(() => {
     canvas.width=Math.min(1584,Math.round(scene.clientWidth*devicePixelRatio));
-    canvas.height=Math.round(canvas.width*993/1584);wake();
+    canvas.height=Math.round(canvas.width*993/1584);
+    panelTrail.width=canvas.width;
+    panelTrail.height=canvas.height;
+    wake();
   }).observe(scene);
-  scene.addEventListener('pointermove',e=>{
+  shell.addEventListener('pointermove',e=>{
     if(e.pointerType==='touch' || reduced.matches) return;
     const b=scene.getBoundingClientRect(), now=performance.now();
     const next={x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height,t:now};
@@ -207,7 +218,7 @@
     }
     lastPointer=next;
   });
-  scene.addEventListener('pointerleave',()=>{lastPointer=null;hover=null;wake()});
+  shell.addEventListener('pointerleave',()=>{lastPointer=null;hover=null;wake()});
   scene.querySelectorAll('[data-object]').forEach(link=>{
     const show=()=>{hover=link.dataset.object;wake()};
     const hide=()=>{hover=null;wake()};
@@ -217,7 +228,7 @@
     link.addEventListener('blur',hide);
     link.addEventListener('click',()=>{lastPointer=null;points=[];hover=null;wake()});
   });
-  drawing.onload=wake;
+  drawing.onload=()=>{document.body.classList.add('trail-ready');wake()};
 })();
 
 // Shared scene also handles bookmarked story links.
