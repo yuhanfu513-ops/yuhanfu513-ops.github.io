@@ -205,11 +205,12 @@
   function updateCursor(e) {
     const panel = shell.querySelector('.story-panel:not([hidden])');
     const item = e.target.closest('[data-object]');
-    const useCircle = !reduced.matches && e.pointerType !== 'touch' && (panel || item);
+    const interactive = e.target.closest('a[href], button, input, select, textarea, [role="button"]');
+    const useCircle = !reduced.matches && e.pointerType !== 'touch' && (panel || (interactive && shell.contains(interactive)));
     storyCursor.classList.toggle('is-visible', !!useCircle);
     if (useCircle) {
-      const title = panel?.querySelector('h1') || shell.querySelector(`[data-panel="${item.dataset.object}"] h1`);
-      if (title) storyCursor.style.color = getComputedStyle(title).color;
+      const title = panel?.querySelector('h1') || (item && shell.querySelector(`[data-panel="${item.dataset.object}"] h1`));
+      storyCursor.style.color = title ? getComputedStyle(title).color : 'var(--orange)';
       storyCursor.style.left = `${e.clientX}px`;
       storyCursor.style.top = `${e.clientY}px`;
       points = [];
@@ -234,6 +235,19 @@
   });
   shell.addEventListener('pointerleave',()=>{storyCursor.classList.remove('is-visible');lastPointer=null;hover=null;wake()});
   shell.addEventListener('pointerover', updateCursor);
+  document.addEventListener('pointermove', e => {
+    if (!shell.contains(e.target) && shell.querySelector('.story-panel:not([hidden])')) updateCursor(e);
+  });
+  document.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && (shell.contains(e.target) || shell.querySelector('.story-panel:not([hidden])'))) {
+      updateCursor(e);
+      if (storyCursor.classList.contains('is-visible')) storyCursor.classList.add('is-pressed');
+    }
+  });
+  const releaseCursor = () => storyCursor.classList.remove('is-pressed');
+  document.addEventListener('pointerup', releaseCursor);
+  document.addEventListener('pointercancel', releaseCursor);
+  window.addEventListener('blur', releaseCursor);
   shell.addEventListener('click', e => {
     if (e.detail) requestAnimationFrame(() => updateCursor(e));
   });
