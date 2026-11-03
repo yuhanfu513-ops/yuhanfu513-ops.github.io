@@ -94,6 +94,23 @@ main{width:100%}
 @media(max-width:700px){.help-content{width:auto;padding:70px 24px 36px;font-size:16px}.help-content h1{margin-bottom:24px}.help-panel .close-story{position:absolute}}
 @media(prefers-reduced-motion:reduce){.help-label{transition:none}}
 
+/* Help page: Latin glyphs use Times, Chinese glyphs fall back to Songti SC. */
+.help-trigger .help-label,.help-content{font-family:'Times New Roman','Songti SC','Songti TC',STSong,serif}
+.help-panel{background:rgba(0,0,0,.42)}
+.help-panel .help-content{position:absolute;inset:0;width:100%;margin:0;padding:0;font-size:1.4583cqw;line-height:1.55}
+.help-content h1{position:absolute;top:15.73%;left:0;width:100%;margin:0;text-align:center;font:400 4.8611cqw/1.55 'Times New Roman','Songti SC',serif}
+.help-content .help-item{position:absolute;left:26.0417%;width:47.9167%;margin:0}
+.help-content .help-item:nth-of-type(1){top:32.56%}
+.help-content .help-item:nth-of-type(2){top:51.94%}
+.help-content .help-item:nth-of-type(3){top:69.1%}
+.help-content h2{margin:0 0 .5417cqw;font-size:1.6667cqw;line-height:1.55;font-weight:400}
+@media(max-width:700px){
+  .help-panel .help-content{position:relative;inset:auto;width:auto;padding:70px 24px 36px;font-size:16px}
+  .help-content h1{position:static;width:auto;margin:0 0 30px;font-size:clamp(34px,8vw,48px);line-height:1.2}
+  .help-content .help-item{position:static;width:auto;margin:0 0 28px}
+  .help-content h2{font-size:19px;margin:0 0 8px}
+}
+
 /* Soft, gently breathing color boundaries around the explored objects. */
 .room-explore .color-region{clip-path:none;mask-image:var(--bubble-mask);-webkit-mask-image:var(--bubble-mask);mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}
 .room-explore .color-region--cello{--bubble-mask:url("assets/bubble-cello.svg")}
