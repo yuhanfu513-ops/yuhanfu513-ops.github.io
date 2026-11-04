@@ -15,6 +15,9 @@
       <div class="scene room-explore">
         <img class="room room-preview" src="assets/room-geometric-lamps-preview.jpg" fetchpriority="high" alt="一间简约几何线稿房间，窗前放着大提琴，左边有鞋柜，右边是书桌和电脑。">
         <img class="room progressive-full" data-full-src="assets/room-geometric-lamps-hd.jpg" alt="" aria-hidden="true">
+        <img class="room light-layer light-layer--left" src="assets/revised-detail-hd.jpg" alt="" aria-hidden="true" data-light-region="left">
+        <img class="room light-layer light-layer--desk" src="assets/revised-detail-hd.jpg" alt="" aria-hidden="true" data-light-region="desk">
+        <img class="room light-layer light-layer--bedside" src="assets/revised-detail-hd.jpg" alt="" aria-hidden="true" data-light-region="bedside">
         <img class="room color-region color-preview color-region--cello" data-region-preview="cello" data-preview-src="assets/revised-color-preview.jpg" alt="" aria-hidden="true">
         <img class="room color-region color-full color-region--cello" data-region="cello" data-full-src="assets/revised-color-hd.jpg" alt="" aria-hidden="true">
         <img class="room color-region color-preview color-region--boots" data-region-preview="boots" data-preview-src="assets/revised-color-preview.jpg" alt="" aria-hidden="true">
@@ -22,9 +25,12 @@
         <img class="room color-region color-preview color-region--laptop" data-region-preview="laptop" data-preview-src="assets/revised-color-preview.jpg" alt="" aria-hidden="true">
         <img class="room color-region color-full color-region--laptop" data-region="laptop" data-full-src="assets/revised-color-hd.jpg" alt="" aria-hidden="true">
         <canvas class="detail-trail room" aria-hidden="true"></canvas>
-        <a class="hotspot hotspot--cello" href="cello-story.html" data-object="cello" aria-label="探索大提琴"></a>
-        <a class="hotspot hotspot--boots" href="boots-story.html" data-object="boots" aria-label="探索红色球鞋"></a>
-        <a class="hotspot hotspot--laptop" href="laptop-story.html" data-object="laptop" aria-label="探索苹果电脑"></a>
+        <a class="hotspot hotspot--cello" href="cello-story.html" data-object="cello" aria-label="探索大提琴" hidden><span>大提琴</span></a>
+        <a class="hotspot hotspot--boots" href="boots-story.html" data-object="boots" aria-label="探索红色球鞋" hidden><span>红色球鞋</span></a>
+        <a class="hotspot hotspot--laptop" href="laptop-story.html" data-object="laptop" aria-label="探索苹果电脑" hidden><span>苹果电脑</span></a>
+        <button class="lamp lamp--left" type="button" data-lamp="left" aria-label="照亮大提琴和球鞋区域" aria-pressed="false"></button>
+        <button class="lamp lamp--desk" type="button" data-lamp="desk" aria-label="照亮书桌区域" aria-pressed="false"></button>
+        <button class="lamp lamp--bedside" type="button" data-lamp="bedside" aria-label="照亮床头区域" aria-pressed="false"></button>
       </div>
       <button class="help-trigger" type="button" hidden aria-label="How can I help" aria-haspopup="dialog"><span class="help-label">How can I help</span><span class="help-icon" aria-hidden="true">?</span></button>
       <section class="story-panel help-panel" data-panel="help" hidden role="dialog" aria-modal="true" aria-labelledby="help-title">

@@ -1,7 +1,11 @@
 (() => {
   const storageKey = 'bill-room-explored-v1';
+  const lightStorageKey = 'bill-room-lights-v1';
   const objects = ['cello', 'boots', 'laptop'];
+  const objectLight = { cello: 'left', boots: 'left', laptop: 'desk' };
+  const lights = ['left', 'desk', 'bedside'];
   let explored = new Set();
+  let illuminated = new Set();
   let navigating = false;
   let openingFrame = 0;
   let closeTimer = 0;
@@ -18,6 +22,9 @@
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
       if (Array.isArray(saved)) explored = new Set(saved.filter(item => objects.includes(item)));
+      const savedLights = JSON.parse(localStorage.getItem(lightStorageKey) || '[]');
+      if (Array.isArray(savedLights)) illuminated = new Set(savedLights.filter(item => lights.includes(item)));
+      explored.forEach(item => illuminated.add(objectLight[item]));
     } catch {
       // The interaction still works when browser storage is unavailable.
     }
@@ -25,6 +32,12 @@
   }
 
   function renderProgress() {
+    document.querySelectorAll('[data-light-region]').forEach(region => {
+      region.classList.toggle('is-lit', illuminated.has(region.dataset.lightRegion));
+    });
+    document.querySelectorAll('[data-lamp]').forEach(lamp => {
+      lamp.setAttribute('aria-pressed', String(illuminated.has(lamp.dataset.lamp)));
+    });
     document.querySelectorAll('[data-region-preview]').forEach(preview => {
       const lit = explored.has(preview.dataset.regionPreview);
       preview.classList.toggle('is-lit', lit);
@@ -39,12 +52,21 @@
     });
     document.querySelectorAll('[data-object]').forEach(link => {
       link.classList.toggle('is-explored', explored.has(link.dataset.object));
+      link.hidden = !illuminated.has(objectLight[link.dataset.object]);
     });
     const help = document.querySelector('.help-trigger');
     if (help) help.hidden = !objects.every(item => explored.has(item));
     const progress = document.querySelector('[data-progress]');
     if (progress) progress.textContent = explored.size;
   }
+
+  document.querySelectorAll('[data-lamp]').forEach(lamp => {
+    lamp.addEventListener('click', () => {
+      illuminated.add(lamp.dataset.lamp);
+      try { localStorage.setItem(lightStorageKey, JSON.stringify([...illuminated])); } catch {}
+      renderProgress();
+    });
+  });
 
   document.querySelectorAll('[data-object]').forEach(link => {
     function rememberObject() {
@@ -58,10 +80,12 @@
       renderProgress();
     }
     link.addEventListener('auxclick', event => {
+      if (!illuminated.has(objectLight[link.dataset.object])) { event.preventDefault(); return; }
       if (event.button === 1) rememberObject();
     });
     link.addEventListener('click', event => {
       if (event.button !== 0) return;
+      if (!illuminated.has(objectLight[link.dataset.object])) { event.preventDefault(); return; }
       const openSeparately = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
       if (!openSeparately) event.preventDefault();
       if (navigating) return;
@@ -157,7 +181,10 @@
   const shapes = {
     cello: [[37,30],[38.5,30],[39,39],[40.5,42],[40.5,46],[40,48],[41.4,53],[41.2,57],[40.5,59],[41,61],[40,61],[39.5,59],[35.5,59],[35,61],[34.3,61],[35,58],[34.3,55],[34.5,51],[35.3,48],[35,45],[35,42],[36.8,39]],
     boots: [[21.6,52],[23.8,50.5],[28.3,50.5],[28.3,57],[26.2,62],[21.6,62]],
-    laptop: [[81.8,41.5],[85.8,42.5],[84.7,48.8],[85.5,50],[80.3,50.4],[77.2,48.2],[80.3,47.5]]
+    laptop: [[81.8,41.5],[85.8,42.5],[84.7,48.8],[85.5,50],[80.3,50.4],[77.2,48.2],[80.3,47.5]],
+    'lamp-left': [[28.7,33],[32.3,33],[32.3,40],[28.7,40]],
+    'lamp-desk': [[82.7,34],[88.4,34],[88.4,44.5],[82.7,44.5]],
+    'lamp-bedside': [[93.2,35],[99,35],[99,53],[93.2,53]]
   };
   let hover = null, lastPointer = null, points = [], frame = 0;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -259,6 +286,14 @@
     link.addEventListener('focus',show);
     link.addEventListener('blur',hide);
     link.addEventListener('click',()=>{lastPointer=null;points=[];hover=null;wake()});
+  });
+  scene.querySelectorAll('[data-lamp]').forEach(lamp => {
+    const show = () => { hover = 'lamp-' + lamp.dataset.lamp; wake(); };
+    const hide = () => { hover = null; wake(); };
+    lamp.addEventListener('pointerenter', show);
+    lamp.addEventListener('pointerleave', hide);
+    lamp.addEventListener('focus', show);
+    lamp.addEventListener('blur', hide);
   });
   drawing.onload=()=>{document.body.classList.add('trail-ready');wake()};
 })();

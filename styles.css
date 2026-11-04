@@ -125,3 +125,22 @@ main{width:100%}
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
   body.trail-ready .scene-shell, body.trail-ready .scene-shell *, body.trail-ready:has(.story-panel:not([hidden])), body.trail-ready:has(.story-panel:not([hidden])) *{cursor:none!important}
 }
+
+/* Lamps reveal local detail before their stories can be explored. */
+.light-layer{z-index:1;pointer-events:none;opacity:0;transition:opacity .8s ease;mask-image:var(--light-mask);-webkit-mask-image:var(--light-mask)}
+.light-layer.is-lit{opacity:1}
+.light-layer--left{--light-mask:radial-gradient(ellipse 13.5% 29% at 31.7% 40.8%,#000 86%,transparent 100%)}
+.light-layer--desk{--light-mask:radial-gradient(ellipse 12.2% 28% at 78.2% 28.3%,#000 86%,transparent 100%)}
+.light-layer--bedside{--light-mask:radial-gradient(ellipse 7.3% 27% at 92.4% 44.6%,#000 86%,transparent 100%)}
+.room-explore .detail-trail{z-index:2}
+.room-explore .color-region{z-index:3}
+.room-explore .hotspot{z-index:5}
+.hotspot[hidden]{display:none}
+.room-explore .hotspot span{position:absolute;top:100%;left:50%;padding:3px 0;transform:translateX(-50%);opacity:1;color:#fff;font-size:clamp(12px,1.1cqw,16px);white-space:nowrap}
+.room-explore .hotspot:hover span,.room-explore .hotspot:focus-visible span{transform:translateX(-50%)}
+.lamp{position:absolute;z-index:6;padding:0;border:0;background:transparent;border-radius:50%;-webkit-tap-highlight-color:transparent}
+.lamp:focus-visible{outline:2px solid #ffc48d;outline-offset:2px}
+.lamp--left{left:28.7%;top:33%;width:3.6%;height:7%}
+.lamp--desk{left:82.7%;top:35%;width:5.7%;height:8%}
+.lamp--bedside{left:93.2%;top:35.5%;width:6%;height:17%}
+@media(prefers-reduced-motion:reduce){.light-layer{transition:none}}
