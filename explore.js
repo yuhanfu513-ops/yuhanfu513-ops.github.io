@@ -35,6 +35,7 @@
     document.querySelectorAll('[data-light-region]').forEach(region => {
       region.classList.toggle('is-lit', illuminated.has(region.dataset.lightRegion));
     });
+    document.dispatchEvent(new Event('lights-changed'));
     document.querySelectorAll('[data-lamp]').forEach(lamp => {
       lamp.setAttribute('aria-pressed', String(illuminated.has(lamp.dataset.lamp)));
     });
@@ -229,21 +230,51 @@
     canvas.height=Math.round(canvas.width*993/1584);
     wake();
   }).observe(scene);
-  // These ellipses match the illuminated masks in styles.css.
+  // One animated outline controls both the visible mask and the cursor hit area.
   const lightAreas = {
-    left: [31.7, 40.8, 13.5, 29],
-    desk: [78.2, 28.3, 12.2, 28],
-    bedside: [92.4, 44.6, 7.3, 27]
+    left: [0.318, 0.410, 0.135, 0.285, 0],
+    desk: [0.782, 0.283, 0.121, 0.280, 0],
+    bedside: [0.958, 0.585, 0.130, 0.280, 0.070]
   };
+  const lightPaths = {};
+  let lightFrame = 0;
+  function outline([cx, cy, rx, ry, skew], time) {
+    const vertices = Array.from({ length: 32 }, (_, i) => {
+      const angle = i * Math.PI * 2 / 32;
+      const wave = 1 + 0.022 * Math.sin(3 * angle + time * 0.45) + 0.014 * Math.sin(5 * angle - time * 0.32);
+      return [cx + wave * (rx * Math.cos(angle) - skew * Math.sin(angle)), cy + wave * ry * Math.sin(angle)];
+    });
+    const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    const start = mid(vertices[31], vertices[0]);
+    return 'M ' + start.join(' ') + ' ' + vertices.map((p, i) => {
+      const end = mid(p, vertices[(i + 1) % vertices.length]);
+      return 'Q ' + p.join(' ') + ' ' + end.join(' ');
+    }).join(' ') + ' Z';
+  }
+  function drawLightMasks(timestamp = 0) {
+    lightFrame = 0;
+    for (const [name, area] of Object.entries(lightAreas)) {
+      const path = outline(area, reduced.matches ? 0 : timestamp / 1000);
+      scene.querySelector(`[data-light-path="${name}"]`).setAttribute('d', path);
+      lightPaths[name] = new Path2D(path);
+    }
+    if (!reduced.matches && scene.querySelector('.light-layer.is-lit')) lightFrame = requestAnimationFrame(drawLightMasks);
+  }
+  function startLightMasks() {
+    if (!lightFrame) lightFrame = requestAnimationFrame(drawLightMasks);
+  }
+  document.addEventListener('lights-changed', startLightMasks);
+  reduced.addEventListener('change', startLightMasks);
+  drawLightMasks();
   function inIlluminatedArea(e) {
     const bounds = scene.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return false;
-    const x = (e.clientX - bounds.left) / bounds.width * 100;
-    const y = (e.clientY - bounds.top) / bounds.height * 100;
-    return Object.entries(lightAreas).some(([name, [cx, cy, rx, ry]]) => {
+    const x = (e.clientX - bounds.left) / bounds.width;
+    const y = (e.clientY - bounds.top) / bounds.height;
+    return Object.keys(lightAreas).some(name => {
       const layer = scene.querySelector(`[data-light-region="${name}"]`);
       return layer?.classList.contains('is-lit') &&
-        ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1;
+        lightPaths[name] && ctx.isPointInPath(lightPaths[name], x, y);
     });
   }
   function updateCursor(e) {

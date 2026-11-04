@@ -13,6 +13,12 @@
   <main>
     <div class="scene-shell">
       <div class="scene room-explore">
+        <svg class="light-mask-defs" aria-hidden="true" width="0" height="0" xmlns="http://www.w3.org/2000/svg"><defs>
+          <filter id="light-edge-softness" x="-0.1" y="-0.1" width="1.2" height="1.2" primitiveUnits="objectBoundingBox"><feGaussianBlur stdDeviation="0.006"/></filter>
+          <mask id="light-mask-left" maskContentUnits="objectBoundingBox" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="1"><path data-light-path="left" fill="white" filter="url(#light-edge-softness)"/></mask>
+          <mask id="light-mask-desk" maskContentUnits="objectBoundingBox" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="1"><path data-light-path="desk" fill="white" filter="url(#light-edge-softness)"/></mask>
+          <mask id="light-mask-bedside" maskContentUnits="objectBoundingBox" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="1"><path data-light-path="bedside" fill="white" filter="url(#light-edge-softness)"/></mask>
+        </defs></svg>
         <img class="room room-preview" src="assets/room-geometric-lamps-preview.jpg" fetchpriority="high" alt="一间简约几何线稿房间，窗前放着大提琴，左边有鞋柜，右边是书桌和电脑。">
         <img class="room progressive-full" data-full-src="assets/room-geometric-lamps-hd.jpg" alt="" aria-hidden="true">
         <img class="room light-layer light-layer--left" src="assets/revised-detail-hd.jpg" alt="" aria-hidden="true" data-light-region="left">
