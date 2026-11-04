@@ -241,7 +241,7 @@
   function outline([cx, cy, rx, ry, skew], time) {
     const vertices = Array.from({ length: 32 }, (_, i) => {
       const angle = i * Math.PI * 2 / 32;
-      const wave = 1 + 0.022 * Math.sin(3 * angle + time * 0.45) + 0.014 * Math.sin(5 * angle - time * 0.32);
+      const wave = 1 + 0.045 * Math.sin(3 * angle + time * 0.45) + 0.025 * Math.sin(5 * angle - time * 0.32);
       return [cx + wave * (rx * Math.cos(angle) - skew * Math.sin(angle)), cy + wave * ry * Math.sin(angle)];
     });
     const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];

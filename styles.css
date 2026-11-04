@@ -136,8 +136,8 @@ main{width:100%}
 .room-explore .color-region{z-index:3}
 .room-explore .hotspot{z-index:5}
 .hotspot[hidden]{display:none}
-.room-explore .hotspot span{position:absolute;top:100%;left:50%;padding:3px 0;transform:translateX(-50%);opacity:1;color:#fff;font-size:clamp(12px,1.1cqw,16px);white-space:nowrap}
-.room-explore .hotspot:hover span,.room-explore .hotspot:focus-visible span{transform:translateX(-50%)}
+.room-explore .hotspot span{position:absolute;top:100%;left:50%;padding:3px 0;transform:translateX(-50%);opacity:0;color:#fff;font-size:clamp(12px,1.1cqw,16px);white-space:nowrap}
+.room-explore .hotspot:hover span,.room-explore .hotspot:focus-visible span{opacity:1;transform:translateX(-50%)}
 .lamp{position:absolute;z-index:6;padding:0;border:0;background:transparent;border-radius:50%;-webkit-tap-highlight-color:transparent}
 .lamp:focus-visible{outline:2px solid #ffc48d;outline-offset:2px}
 .lamp--left{left:28.7%;top:33%;width:3.6%;height:7%}
