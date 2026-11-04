@@ -229,11 +229,29 @@
     canvas.height=Math.round(canvas.width*993/1584);
     wake();
   }).observe(scene);
+  // These ellipses match the illuminated masks in styles.css.
+  const lightAreas = {
+    left: [31.7, 40.8, 13.5, 29],
+    desk: [78.2, 28.3, 12.2, 28],
+    bedside: [92.4, 44.6, 7.3, 27]
+  };
+  function inIlluminatedArea(e) {
+    const bounds = scene.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return false;
+    const x = (e.clientX - bounds.left) / bounds.width * 100;
+    const y = (e.clientY - bounds.top) / bounds.height * 100;
+    return Object.entries(lightAreas).some(([name, [cx, cy, rx, ry]]) => {
+      const layer = scene.querySelector(`[data-light-region="${name}"]`);
+      return layer?.classList.contains('is-lit') &&
+        ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1;
+    });
+  }
   function updateCursor(e) {
     const panel = shell.querySelector('.story-panel:not([hidden])');
     const item = e.target.closest('[data-object]');
     const interactive = e.target.closest('a[href], button, input, select, textarea, [role="button"]');
-    const useCircle = !reduced.matches && e.pointerType !== 'touch' && (panel || (interactive && shell.contains(interactive)));
+    const useCircle = !reduced.matches && e.pointerType !== 'touch' &&
+      (panel || (interactive && shell.contains(interactive)) || inIlluminatedArea(e));
     storyCursor.classList.toggle('is-visible', !!useCircle);
     if (useCircle) {
       const title = panel?.querySelector('h1') || (item && shell.querySelector(`[data-panel="${item.dataset.object}"] h1`));
