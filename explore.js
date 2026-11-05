@@ -198,6 +198,12 @@
     'lamp-desk': [[82.7,34],[88.4,34],[88.4,44.5],[82.7,44.5]],
     'lamp-bedside': [[93.2,35],[99,35],[99,53],[93.2,53]]
   };
+  // Soft ellipses encompass the complete detailed lamp, including its stand.
+  const lampReveals = {
+    'lamp-left': [31.3, 34.2, 4.0, 9.0],
+    'lamp-desk': [83.1, 42.0, 8.0, 12.5],
+    'lamp-bedside': [96.2, 44.0, 4.5, 11.5]
+  };
   let hover = null, lastPointer = null, points = [], frame = 0;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   function wake() { if (!frame) frame = requestAnimationFrame(paint); }
@@ -208,7 +214,19 @@
     points = points.filter(p => now-p.t < 420);
     if (!drawing.complete || !drawing.naturalWidth) return;
     ctx.globalCompositeOperation = 'source-over';
-    if (hover) {
+    if (hover && lampReveals[hover]) {
+      const [x, y, rx, ry] = lampReveals[hover];
+      ctx.save();
+      ctx.translate(x*w/100,y*h/100);
+      ctx.scale(rx*w/100,ry*h/100);
+      const gradient = ctx.createRadialGradient(0,0,0,0,0,1);
+      gradient.addColorStop(0, '#fff');
+      gradient.addColorStop(.65, '#fff');
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle=gradient;
+      ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    } else if (hover) {
       ctx.fillStyle = '#fff';ctx.beginPath();
       shapes[hover].forEach(([x,y],i) => i ? ctx.lineTo(x*w/100,y*h/100) : ctx.moveTo(x*w/100,y*h/100));
       ctx.closePath();ctx.fill();
