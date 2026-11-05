@@ -10,6 +10,17 @@
   let openingFrame = 0;
   let closeTimer = 0;
 
+  // A one-time testing link returns the room to its untouched state.
+  if (new URLSearchParams(location.search).has('reset')) {
+    try {
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(lightStorageKey);
+    } catch {}
+    const cleanUrl = new URL(location.href);
+    cleanUrl.searchParams.delete('reset');
+    history.replaceState(null, '', cleanUrl);
+  }
+
   function loadFullImage(image) {
     if (!image || image.src) return;
     image.src = image.dataset.fullSrc;
