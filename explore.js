@@ -10,6 +10,16 @@
   let openingFrame = 0;
   let closeTimer = 0;
 
+  document.querySelectorAll('.story-panel:not(.help-panel) .story-window').forEach(windowEl => {
+    const updateFades = () => {
+      windowEl.classList.toggle('has-above', windowEl.scrollTop > 2);
+      windowEl.classList.toggle('has-below', windowEl.scrollTop + windowEl.clientHeight < windowEl.scrollHeight - 2);
+    };
+    windowEl.addEventListener('scroll', updateFades, { passive: true });
+    new ResizeObserver(updateFades).observe(windowEl);
+    windowEl.closest('.story-panel').addEventListener('transitionstart', updateFades);
+  });
+
   // A one-time testing link returns the room to its untouched state.
   if (new URLSearchParams(location.search).has('reset')) {
     try {

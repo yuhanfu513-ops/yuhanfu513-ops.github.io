@@ -1,4 +1,5 @@
 :root{color-scheme:dark;--ink:#e7e0d5;--muted:#aaa59d;--orange:#ff8943;--font-chinese:'Songti SC','Songti TC',STSong,'Noto Serif CJK SC',serif}
+@font-face{font-family:ZhiMangXing;src:url('assets/ZhiMangXing-Regular.ttf') format('truetype');font-display:swap}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:#171717;color:var(--ink);font-family:var(--font-chinese)}
 button,input,select,textarea{font:inherit}
@@ -67,6 +68,15 @@ main{width:100%}
 @media(max-width:700px){.story-panel{overflow-y:auto}.story-panel .story-window{position:relative;inset:auto;margin-top:62.5%;overflow:visible}.story-panel .story{background:#171717e8}.close-story{position:fixed;right:12px;top:12px}}
 @media(prefers-reduced-motion:reduce){.color-region{animation:none}}
 @media(prefers-reduced-motion:reduce){.story-panel{transition:none}}
+
+/* The story itself scrolls while the room and object stay in place. */
+.story-panel:not(.help-panel) .story-window{inset:31% 10% 0 50%;overflow-y:auto;overscroll-behavior:contain;pointer-events:auto;scrollbar-width:thin;scrollbar-color:#b6a89b transparent;--fade-top:0px;--fade-bottom:0px;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 var(--fade-top),#000 calc(100% - var(--fade-bottom)),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 var(--fade-top),#000 calc(100% - var(--fade-bottom)),transparent 100%)}
+.story-panel:not(.help-panel) .story-window.has-above{--fade-top:55px}
+.story-panel:not(.help-panel) .story-window.has-below{--fade-bottom:65px}
+.story-panel:not(.help-panel) .story-window .story{position:relative;left:auto;top:auto;width:auto;padding:0 1.2cqw 5cqw 0;font:400 1.5278cqw/1.55 var(--font-chinese);background:transparent}
+.story-panel:not(.help-panel) .story h1{font:400 4.8611cqw/1.55 ZhiMangXing,var(--font-chinese);margin:0 0 .5cqw}
+.story-panel:not(.help-panel) .story p{margin:0 0 2cqw}
+@media(max-width:700px){.story-panel:not(.help-panel){overflow:hidden}.story-panel:not(.help-panel) .story-window{position:absolute;inset:48% 4% 3%;margin:0}.story-panel:not(.help-panel) .story-window .story{padding:12px 16px 36px;font-size:16px;line-height:1.65}.story-panel:not(.help-panel) .story h1{font-size:36px}.story-panel:not(.help-panel) .story p{margin-bottom:1.2em}}
 
 /* Revised room: basic drawing, revealed detail, then persistent color. */
 .room-explore{aspect-ratio:1584/993}
