@@ -1,0 +1,27 @@
+[
+  {
+    "mobile": false,
+    "errors": [],
+    "glbLoadsPerInitialSession": 1,
+    "memory": {
+      "calls": 803,
+      "triangles": 4664099,
+      "geometries": 282,
+      "textures": 38
+    }
+  },
+  {
+    "mobile": true,
+    "errors": [],
+    "glbLoadsPerInitialSession": 1,
+    "memory": {
+      "calls": 803,
+      "triangles": 4664099,
+      "geometries": 282,
+      "textures": 36
+    }
+  },
+  {
+    "webglFallback": true
+  }
+]
