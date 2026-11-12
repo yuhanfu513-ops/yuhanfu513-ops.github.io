@@ -1,27 +1,71 @@
-[
-  {
-    "mobile": false,
-    "errors": [],
-    "glbLoadsPerInitialSession": 1,
-    "memory": {
-      "calls": 803,
-      "triangles": 4664099,
-      "geometries": 282,
-      "textures": 38
+{
+  "regression": [
+    {
+      "mobile": false,
+      "errors": [],
+      "glbLoadsPerInitialSession": 1,
+      "memory": {
+        "calls": 803,
+        "triangles": 4664099,
+        "geometries": 282,
+        "textures": 38
+      }
+    },
+    {
+      "mobile": true,
+      "errors": [],
+      "glbLoadsPerInitialSession": 1,
+      "memory": {
+        "calls": 803,
+        "triangles": 4664099,
+        "geometries": 282,
+        "textures": 36
+      }
+    },
+    {
+      "webglFallback": true
     }
-  },
-  {
-    "mobile": true,
-    "errors": [],
-    "glbLoadsPerInitialSession": 1,
-    "memory": {
-      "calls": 803,
-      "triangles": 4664099,
-      "geometries": 282,
-      "textures": 36
+  ],
+  "foregroundHalftone": [
+    {
+      "mobile": false,
+      "canvasClicks": [
+        "left",
+        "desk",
+        "bedside",
+        "cello",
+        "boots",
+        "laptop"
+      ],
+      "errors": [],
+      "stableGeometryCount": 282
+    },
+    {
+      "mobile": true,
+      "canvasClicks": [
+        "left",
+        "desk",
+        "bedside",
+        "cello",
+        "boots",
+        "laptop"
+      ],
+      "errors": [],
+      "stableGeometryCount": 282
     }
-  },
-  {
-    "webglFallback": true
-  }
-]
+  ],
+  "visualChecks": [
+    "West: bookshelf/radiator reveal desk and bed",
+    "East: headboard reveals bed contents",
+    "North: wardrobe/window reveal protected lamp and cello"
+  ],
+  "protectedIds": [
+    "left",
+    "desk",
+    "bedside",
+    "cello",
+    "boots",
+    "laptop"
+  ],
+  "modelChanged": false
+}

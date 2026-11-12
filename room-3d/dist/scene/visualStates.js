@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {applyForegroundHalftone,createForegroundUniforms} from './foregroundHalftone.js';
 import {objects} from '../content/objects.js';
 const wallFragment=`
 uniform vec4 uWalls;
@@ -52,15 +53,17 @@ void main(){
  vec3 world=(camWorld*vp).xyz;
  vec3 color=texture2D(tColor,vUv).rgb*1.12;
  color=clamp((color*(2.51*color+.03))/(color*(2.43*color+.59)+.14),0.,1.);
- vec3 n=texture2D(tNormal,vUv).xyz;
+ vec4 ns=texture2D(tNormal,vUv);vec3 n=ns.xyz;
+ float halftone=clamp((1.-ns.a)*2.,0.,1.);
  float edge=0.;float dz=0.;
  for(int i=0;i<4;i++){
   vec2 off=i==0?vec2(pixel.x,0.):i==1?vec2(-pixel.x,0.):i==2?vec2(0.,pixel.y):vec2(0.,-pixel.y);
-  vec3 nb=texture2D(tNormal,vUv+off).xyz;
-  edge=max(edge,length(n-nb));
+  vec4 neighbor=texture2D(tNormal,vUv+off);vec3 nb=neighbor.xyz;
+  float solid=step(.98,ns.a)*step(.98,neighbor.a);
+  edge=max(edge,length(n-nb)*solid);
   float db=texture2D(tDepth,vUv+off).x;
   vec4 other=invProjection*vec4((vUv+off)*2.-1.,db*2.-1.,1.);
-  dz=max(dz,abs(other.z/other.w-vp.z)/max(.5,-vp.z));
+  dz=max(dz,abs(other.z/other.w-vp.z)/max(.5,-vp.z)*solid);
  }
  edge=max(smoothstep(.07,.32,edge),smoothstep(.002,.012,dz));
  float reveal=0.,colorMask=0.;
@@ -71,13 +74,15 @@ void main(){
  float fill=(.018+.025*max(n.z,.0));
  vec3 ink=vec3(fill+edge*.78);
  vec3 outColor=mix(ink*reveal,color,colorMask);
- if(debugView>1.5)outColor=color;else if(debugView>.5)outColor=ink;
+ // Keep the occluder recognizable as sparse neutral ink, including dark portions.
+ outColor=mix(outColor,vec3(.11),halftone);
+ if(debugView>1.5)outColor=color;else if(debugView>.5)outColor=mix(ink,vec3(.11),halftone);
  gl_FragColor=vec4(outColor*mix(1.,.035,modal),1.);
  #include <colorspace_fragment>
 }`;
 export class VisualStates{
  constructor(renderer,scene,camera,model,mobile){
-  this.renderer=renderer;this.scene=scene;this.camera=camera;this.entries=[];
+  this.renderer=renderer;this.scene=scene;this.camera=camera;this.entries=[];this.foreground=createForegroundUniforms(renderer);
   this.walls={value:new THREE.Vector4()};this.direction=new THREE.Vector3();this.center=new THREE.Vector3(1.75,1,-2.15);
   this.composedRT=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
   this.colorRT=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
@@ -92,6 +97,7 @@ export class VisualStates{
    const architectural=/Warm ivory painted plaster/.test(m.name)||ceiling||(/Ivory satin joinery_cutaway/.test(m.name));
    const normal=new THREE.MeshNormalMaterial({side:m.side});
    if(architectural){o.material=m.clone();injectCut(o.material,this.walls,ceiling);injectCut(normal,this.walls,ceiling);o.castShadow=false;}
+   if(!architectural){o.material=m.clone();applyForegroundHalftone(o.material,this.foreground);applyForegroundHalftone(normal,this.foreground,true);}
    this.entries.push({object:o,color:o.material,normal,skip:m.transparent&&m.opacity<.2});
   });
   const ls=['left','desk','bedside'],ss=['cello','boots','laptop'];

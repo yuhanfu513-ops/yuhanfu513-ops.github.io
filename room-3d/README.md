@@ -14,6 +14,8 @@
 
 拖动环绕、滚轮或双指缩放；房间保持居中。靠近镜头的多面墙同时渐隐，地板不隐藏，屋顶剖开。初始只有三盏简化几何灯。点灯后对应区域显示黑白线稿，点击故事物品恢复局部颜色并打开正文。
 
+高柜、床头板等挡视线的物品会随视角变成稀疏漫画网点，后面的物品可见、可点击；三盏灯和三个故事物品始终保持完整。
+
 最新鼠标规则：没有移动透视、拖尾或跟随揭露区域。正常区域显示系统鼠标；仅悬停灯具或已解锁的故事物品时显示橙色圆圈。触摸设备没有自定义鼠标。
 
 左灯解锁大提琴、红鞋；桌灯解锁电脑；床头灯照亮床。三篇故事全部打开后，右上角出现 How can I help。Tab、Enter、Space、Escape 和正文滚动键可用；底部“探索入口”提供不依赖小物件点击的路径。
@@ -24,6 +26,7 @@
 
 - `dist/app.js`：场景、唯一动画循环、鼠标/触摸、相机和灯光。
 - `dist/scene/visualStates.js`：墙体渐隐、法线/深度线稿、局部颜色与故事背景虚化。
+- `dist/scene/foregroundHalftone.js`：前景遮挡物漫画网点、空间范围与交互物品保护。
 - `dist/scene/objectRegistry.js`：真实物品映射、简化灯具、同一几何体的故事展示副本。
 - `dist/content/objects.js`：从 V9 源场景测量的位置、范围、稳定 ID。
 - `dist/content/stories.js`：完整原文与解锁规则。
@@ -33,6 +36,7 @@
 - `OBJECT_MAP.json`：GLB 实际 Mesh 名称和物品边界。
 - `IMPLEMENTATION.md`：实现、限制、验证和模型校验值。
 - `TEST_RESULTS.json`：最近一次桌面/手机/无 WebGL 测试结果。
+- `npm run test:halftone`：前景透视及画布穿透点击专项检查。
 
 网站保持现有私有访问配置。Figma 新区域：
 https://www.figma.com/design/mRlAHBZIFLDeXpYuzqu6Ko?node-id=258-26

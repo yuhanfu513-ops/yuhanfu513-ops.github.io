@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node server.mjs",
     "build": "node build.mjs",
-    "test": "node tests/exploration.mjs"
+    "test": "node tests/exploration.mjs",
+    "test:halftone": "node tests/halftone.mjs"
   },
   "dependencies": {
     "three": "0.187.0"

@@ -3,3 +3,4 @@ node_modules/
 room-web/
 tests/*
 !tests/exploration.mjs
+!tests/halftone.mjs
