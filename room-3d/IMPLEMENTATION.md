@@ -2,7 +2,7 @@
 
 ## 原项目检查
 
-原生 JavaScript ES modules，Three.js 0.187.0。入口 `dist/app.js`。GLTFLoader 加载单个 `room-v9.glb`，沿用 Meshopt、GPU instancing、WebP 和导出材质。RoomEnvironment / PMREM 提供环境反射；程序材质在既有导出流程中烘焙为纹理。未引入 React、Draco、KTX2 或新房间模型。
+原生 JavaScript ES modules，Three.js 0.187.0。入口 `dist/app.js`。GLTFLoader 默认加载单个 `room-baked.glb`（旧 `room-v9.glb` 保留供回退），沿用 Meshopt、GPU instancing、WebP 和导出材质。RoomEnvironment / PMREM 提供环境反射；程序材质在既有导出流程中烘焙为纹理。未引入 React、Draco、KTX2 或新房间模型。
 
 初始相机改为第三视角，围绕房间中心 `(1.75, 0.95, -2.15)` 自由旋转及缩放，关闭平移以保持居中。这依据最新用户指令替代旧提示词的固定门口相机要求。
 
@@ -66,3 +66,7 @@ GPU 工作量来自原有高细节场景，低端移动设备的帧率不能保�
 - 房间复原_兔子脸型与软耳修正版.blend：`200bf3a7f235a051a63244381f1dddc6467fd57da8eb0a792850b86fe86966a3`
 
 暗场与线稿是额外的网页显示状态，不是修改或重新建立原房间。
+
+## 2026-11-13 烘焙更新
+
+新增实现详见 BAKING.md。上述 282 几何体为 11 月 12 日旧版本记录；新导出保留更多原模型细分，最新实测值见 TEST_RESULTS.json。原模型和旧 GLB 哈希仍不变，新增烘焙 GLB 是独立网页资产。

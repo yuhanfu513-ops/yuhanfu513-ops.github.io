@@ -1,12 +1,11 @@
 {
   "left": {
     "meshes": [
-      "V4_Chest_lamp_|_bulb_screw_base_WEB",
+      "Cube249_223",
+      "Cube249_225",
+      "Cube249_226",
       "WEB_WEB_V4_lamp_|_dark_nickel_fittings",
-      "WEB_WEB_V4_lamp_|_fine_tungsten_support",
-      "WEB_WEB_V4_lamp_|_matte_black_powder_coat",
-      "WEB_WEB_V4_lamp_|_warm_LED_filament",
-      "WEB_WEB_V5_|_transparent_lamp_chimney"
+      "WEB_WEB_V4_lamp_|_warm_LED_filament"
     ],
     "bounds": {
       "min": [
@@ -23,13 +22,13 @@
   },
   "desk": {
     "meshes": [
-      "V4_Task_lamp_|_concealed_ceramic_bulb_socket_WEB",
-      "V4_Task_lamp_|_hollow_polished_dome_mesh001",
-      "V4_Task_lamp_|_hollow_polished_dome_mesh001_1",
-      "WEB_WEB_Mini_V3_|_ruby_tail_lamps",
-      "WEB_WEB_V4_lamp_|_black_joint_polymer",
+      "Cube249_188",
+      "Cube249_223",
+      "Cube249_227",
+      "Cube249_228",
+      "Cube249_229",
+      "Cube249_230",
       "WEB_WEB_V4_lamp_|_brushed_nickel",
-      "WEB_WEB_V4_lamp_|_matte_black_powder_coat",
       "WEB_WEB_V4_lamp_|_polished_chrome",
       "WEB_WEB_V4_lamp_|_unlit_frosted_bulb"
     ],
@@ -48,14 +47,14 @@
   },
   "bedside": {
     "meshes": [
-      "Bedside_cosmetic_bottle002_WEB",
-      "V4_Bedside_lamp_|_hanging_blush_ring_WEB",
-      "V4_Bedside_lamp_|_solid_oak_stem_WEB",
-      "WEB_WEB_Mini_V3_|_ruby_tail_lamps",
-      "WEB_WEB_V4_lamp_|_blush_ivory_woven_shade",
-      "WEB_WEB_V4_lamp_|_ivory_ring_inset",
-      "WEB_WEB_V4_lamp_|_lamp_socket_ivory",
-      "WEB_WEB_V4_lamp_|_matte_black_powder_coat",
+      "Cylinder305_5",
+      "Cube249_44",
+      "Cube249_188",
+      "Cube249_223",
+      "Cube249_231",
+      "Cube249_232",
+      "Cube249_233",
+      "Cube249_234",
       "WEB_WEB_V4_lamp_|_unlit_frosted_bulb"
     ],
     "bounds": {
@@ -73,22 +72,23 @@
   },
   "cello": {
     "meshes": [
-      "WEB_WEB_Book_cover_05",
-      "WEB_WEB_Brushed_aluminium",
-      "WEB_WEB_Cello_|_amber_varnished_spruce",
-      "WEB_WEB_Cello_|_carved_pale_maple_bridge",
-      "WEB_WEB_Cello_|_dark_maple_ribs",
-      "WEB_WEB_Cello_|_golden_edge",
-      "WEB_WEB_Cello_|_polished_ebony",
-      "WEB_WEB_Cello_|_purfling",
+      "Cube946_1",
+      "Cube249_1",
+      "Cube249_4",
+      "Cube249_9",
+      "Cube249_30",
+      "Cube249_31",
+      "Cube249_51",
+      "Cube249_77",
+      "Cube249_78",
+      "Cube249_79",
+      "Cube249_80",
+      "Cube249_81",
+      "Cube249_82",
+      "Cube249_84",
+      "Cube249_85",
+      "Cube249_223",
       "WEB_WEB_Cello_|_wound_steel_strings",
-      "WEB_WEB_Dark_charcoal_hardware",
-      "WEB_WEB_Ivory_satin_joinery",
-      "WEB_WEB_Stand_|_black_powder_coated_steel",
-      "WEB_WEB_Stand_|_padded_rubber_supports",
-      "WEB_WEB_Storage_warm_white_lacquer",
-      "WEB_WEB_V3_|_vertical_furniture_grain",
-      "WEB_WEB_V4_lamp_|_matte_black_powder_coat",
       "WEB_WEB_V5_|_clear_acrylic_polished_edge"
     ],
     "bounds": {
@@ -106,13 +106,13 @@
   },
   "boots": {
     "meshes": [
-      "WEB_WEB_Shoes_|_dark_charcoal_rubber",
-      "WEB_WEB_Shoes_|_dark_textile_lining",
-      "WEB_WEB_V4_boot_|_black_printed_branding",
-      "WEB_WEB_V4_boot_|_molded_dark_red_sole",
-      "WEB_WEB_V4_boot_|_mottled_red_woven_upper",
-      "WEB_WEB_V4_boot_|_red_woven_laces",
-      "WEB_WEB_V4_boot_|_white_swoosh"
+      "Cube249_201",
+      "Cube249_205",
+      "Cube249_206",
+      "Cube249_207",
+      "Cube249_208",
+      "Cube249_209",
+      "Cube2064_18"
     ],
     "bounds": {
       "min": [
@@ -129,17 +129,17 @@
   },
   "laptop": {
     "meshes": [
+      "Cube249_86",
+      "Cube249_87",
+      "Cube249_88",
+      "Cube249_91",
+      "Cube249_92",
+      "Cube249_93",
+      "Cube249_94",
       "V3_Laptop_|_inset_black_screen_bezel_WEB",
-      "V4_MacBook_|_fine_recessed_trackpad_seam_WEB",
       "V4_MacBook_|_video_desktop_screen_WEB",
-      "WEB_WEB_Laptop_V3_|_charcoal_polymer",
-      "WEB_WEB_Laptop_V3_|_graphite_anodized_aluminium",
       "WEB_WEB_Laptop_V3_|_machined_chamfer",
-      "WEB_WEB_Laptop_V3_|_satin_black_keys",
-      "WEB_WEB_Laptop_V3_|_soft_black_rubber",
-      "WEB_WEB_Laptop_V3_|_warm_white_legends",
-      "WEB_WEB_MacBook_V4_|_camera_notch_glass",
-      "WEB_WEB_MacBook_V4_|_dark_polished_rear_emblem"
+      "WEB_WEB_MacBook_V4_|_camera_notch_glass"
     ],
     "bounds": {
       "min": [
@@ -156,139 +156,55 @@
   },
   "bed": {
     "meshes": [
-      "Blue_fitted_sheet_WEB",
-      "Checked_sleeping_pillow_|_flat_on_bedding_WEB",
-      "Cream_botanical_cushion_|_plump_and_leaning_WEB",
-      "Gray_upholstered_headboard_WEB",
-      "Mattress_WEB",
-      "Orange_cat_bolster_WEB",
-      "V3_textile_|_folded_back_checked_quilt_WEB",
-      "V3_textile_|_quilt_softly_rolled_binding_WEB",
-      "V3_textile_|_wrinkled_blue_fitted_sheet_WEB",
-      "V4_plush_|_pink_bunny_continuous_stuffed_body_WEB",
-      "V8_rabbit_|_continuous_seated_body_WEB",
-      "V8_rabbit_|_loose_triangular_scarf_WEB",
-      "V9_brown_|_curved_padded_floppy_ear_1_WEB",
-      "V9_brown_|_curved_padded_floppy_ear_-1_WEB",
-      "V9_brown_|_soft_continuous_head_and_cheeks_WEB",
-      "WEB_WEB_Bed_pale_honey_oak",
-      "WEB_WEB_Charcoal_plush_markings",
-      "WEB_WEB_Headboard_keepsake_burgundy",
-      "WEB_WEB_Headboard_seam",
-      "WEB_WEB_Orange_cat_plush",
-      "WEB_WEB_Soft_toy_yellow",
-      "WEB_WEB_Toy_cheeks_red",
-      "WEB_WEB_V3_|_deep_green_patterned_terry_throw",
-      "WEB_WEB_V3_|_throw_cream_woven_binding",
-      "WEB_WEB_V4_|_gray_bunny_knitted_velour",
-      "WEB_WEB_V4_|_gray_bunny_woven_ear_inside",
-      "WEB_WEB_V4_|_plush_stitched_pink",
-      "WEB_WEB_V4_|_polished_deep_brown_toy_eyes",
-      "WEB_WEB_V4_|_rabbit_floral_cotton",
-      "WEB_WEB_V7_|_pink_bunny_soft_continuous_waves",
-      "WEB_WEB_V9_|_dark_brown_stitched_features",
-      "WEB_WEB_V9_|_dusty_rose_embroidered_nose",
-      "WEB_WEB_V9_|_warm_black_inset_toy_eyes"
+      "V4_plush_|_pink_bunny_belly_Mesh001",
+      "V4_plush_|_pink_bunny_belly_Mesh001_1",
+      "Cube2064_3",
+      "Cube2064_4",
+      "Cube2064_5",
+      "Cube2064_11",
+      "Cube2064_12",
+      "Cube2064_13",
+      "Cube2064_14",
+      "Cube2064_15",
+      "Cube2064_16"
     ],
     "bounds": null
   },
   "deskFurniture": {
     "meshes": [
-      "Black_oval_tabletop_speaker_WEB",
       "Desk_middle_drawer_curved_pull_WEB",
-      "Football_underlying_stitched_bladder_WEB",
-      "WEB_WEB_Ball_ivory_panel",
-      "WEB_WEB_Ball_navy_panel",
-      "WEB_WEB_Ball_red_panel",
-      "WEB_WEB_Desk_|_charcoal",
-      "WEB_WEB_Desk_|_dark_blue",
-      "WEB_WEB_Desk_|_edge_and_grain",
-      "WEB_WEB_Desk_|_forest_green",
-      "WEB_WEB_Desk_|_mustard",
       "WEB_WEB_Desk_|_polished_aluminium",
-      "WEB_WEB_Desk_|_porcelain",
-      "WEB_WEB_Desk_|_smoky_grey",
-      "WEB_WEB_Desk_|_vermilion",
-      "WEB_WEB_Desk_|_warm_paper",
-      "WEB_WEB_V3_|_desk_long-grain_walnut",
-      "WEB_WEB_V3_|_horizontal_walnut_drawer_grain",
-      "WEB_WEB_V3_|_vertical_furniture_grain",
-      "WEB_WEB_V5_|_clear_acrylic_polished_edge",
-      "WEB_WEB_V5_|_transparent_display_and_cabinet_glazing"
+      "WEB_WEB_V5_|_clear_acrylic_polished_edge"
     ],
     "bounds": null
   },
   "wardrobe": {
     "meshes": [
-      "Audio_V3_|_recorder_LCD_glass_WEB",
-      "Black_perforated_board_WEB",
-      "Small_green_wardrobe_label_WEB",
-      "Tall_wardrobe_carcass_WEB",
-      "WEB_WEB_Audio_V3_|_brushed_headband_steel",
-      "WEB_WEB_Audio_V3_|_deep_acoustic_foam",
-      "WEB_WEB_Audio_V3_|_graphite_cup_inset",
-      "WEB_WEB_Audio_V3_|_light_printing",
-      "WEB_WEB_Audio_V3_|_recorder_white_ABS",
-      "WEB_WEB_Audio_V3_|_red_accent_stitching",
-      "WEB_WEB_Audio_V3_|_satin_black_ABS",
-      "WEB_WEB_Audio_V3_|_soft_charcoal_leather",
-      "WEB_WEB_Brushed_aluminium",
-      "WEB_WEB_Charm_cord",
-      "WEB_WEB_Charm_tassel_(001,_027,_025)",
-      "WEB_WEB_Charm_tassel_(082,_049,_002)",
-      "WEB_WEB_V5_|_pegboard_mounting_screw"
+      "Cube249_8",
+      "Cube249_10",
+      "WEB_WEB_Audio_V3_|_brushed_headband_steel"
     ],
     "bounds": null
   },
   "bookshelf": {
     "meshes": [
-      "Blue_diamond_pendant_WEB",
-      "WEB_WEB_Book_cover_00",
-      "WEB_WEB_Book_cover_01",
-      "WEB_WEB_Book_cover_02",
-      "WEB_WEB_Book_cover_03",
-      "WEB_WEB_Book_cover_04",
-      "WEB_WEB_Book_cover_05",
-      "WEB_WEB_Book_cover_06",
-      "WEB_WEB_Book_cover_07",
-      "WEB_WEB_Book_cover_08",
-      "WEB_WEB_Book_cover_09",
-      "WEB_WEB_Book_cover_10",
-      "WEB_WEB_Charcoal_objects",
-      "WEB_WEB_Chest_walnut",
-      "WEB_WEB_Dark_chest_grain",
-      "WEB_WEB_Storage_brushed_silver",
-      "WEB_WEB_Storage_inside_shadow",
-      "WEB_WEB_Storage_raised_moulding",
-      "WEB_WEB_Storage_red",
-      "Yellow_toy_rounded_body_WEB"
+      "WEB_WEB_Storage_brushed_silver"
     ],
     "bounds": null
   },
   "curtains": {
     "meshes": [
-      "Green_and_red_cube_on_sill_WEB",
-      "Red_gift_box_lid_WEB",
-      "WEB_WEB_Cars_printed_offwhite_curtain",
-      "WEB_WEB_Dark_charcoal_hardware",
-      "WEB_WEB_Handle_mustard_yellow",
-      "WEB_WEB_V5_|_clear_window_panes",
-      "WEB_WEB_Window_pale_aluminium",
-      "Window_stone_sill_WEB"
+      "Cube959_2"
     ],
     "bounds": null
   },
   "speaker": {
     "meshes": [
-      "V4_Bird_|_10_embossed_on_heart_WEB",
-      "V4_Bird_|_continuous_pale_face_dome_WEB",
-      "V4_Bird_|_heart_anniversary_badge_WEB",
-      "V4_Bird_|_low_rubber_foot_WEB",
-      "V4_Bird_|_rounded_orange_beak_WEB",
-      "V4_Bird_|_subtle_beak_split_WEB",
-      "V4_Bird_|_woven_egg_lower_body_WEB",
-      "WEB_WEB_V4_|_bird_glossy_black_eyes",
-      "WEB_WEB_V4_|_speaker_white_cable"
+      "Cube249_210",
+      "Cube249_211",
+      "Cube249_213",
+      "Cube249_214",
+      "Cube249_219"
     ],
     "bounds": null
   }

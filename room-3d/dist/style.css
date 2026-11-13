@@ -4,3 +4,5 @@
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 body.story-open #viewer{filter:none;opacity:1}
 header,.opening,footer,#hotspots{transition:opacity .6s}body.story-open header,body.story-open .opening,body.story-open footer,body.story-open #hotspots{opacity:0;pointer-events:none}
+
+.top-actions #room-look{font:13px var(--serif);width:auto;min-width:76px;padding:0 10px;border:1px solid #544331;border-radius:20px;color:#d4b594}body.full-room .opening{opacity:0;visibility:hidden}#room-look[aria-pressed=true]{border-color:#cb804b;color:#efb887}

@@ -45,7 +45,7 @@ export function createRegistry(model){
    const wrapper=new THREE.Group();wrapper.add(group);registry[id].presentation=wrapper;
   }
  }
- for(const [id,pattern]of Object.entries({bed:/02_Bed|rabbit|plush/i,deskFurniture:/03_Desk/,wardrobe:/Wardrobe/i,bookshelf:/Bookcase/i,curtains:/curtain/i,speaker:/bird/i}))registry[id]={id,meshes:meshes.filter(o=>pattern.test(o.userData.sourceCollection+' '+o.name))};
+ for(const [id,pattern]of Object.entries({bed:/02_Bed|rabbit|plush/i,deskFurniture:/03_Desk/,wardrobe:/Wardrobe/i,bookshelf:/Bookcase/i,curtains:/curtain/i,speaker:/bird/i}))registry[id]={id,meshes:meshes.filter(o=>pattern.test(o.userData.sourceCollection+' '+o.name+' '+o.material.name))};
  return registry;
 }
 export function simpleLamps(){

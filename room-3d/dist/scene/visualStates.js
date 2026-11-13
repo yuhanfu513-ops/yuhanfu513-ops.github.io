@@ -1,10 +1,13 @@
 import * as THREE from 'three';
 import {applyForegroundHalftone,createForegroundUniforms} from './foregroundHalftone.js';
+import {blenderLookTexture,blenderLookGLSL} from './blenderLook.js';
+import {applyBakedMaterial} from './bakedMaterials.js';
 import {objects} from '../content/objects.js';
 const wallFragment=`
 uniform vec4 uWalls;
 varying vec3 vRoomWorld;
 float wallVisibility(){
+ if(vRoomWorld.y>2.77)return 0.;
  float a=0.;
  if(vRoomWorld.x<.04)a=max(a,uWalls.x);
  if(vRoomWorld.x>3.46)a=max(a,uWalls.y);
@@ -37,10 +40,11 @@ function injectCut(material,wallUniform,ceiling=false){
 }
 const vertex=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`;
 const fragment=`precision highp float;
+${blenderLookGLSL}
 uniform sampler2D tColor,tNormal,tDepth;
 uniform mat4 invProjection,camWorld;
 uniform vec2 pixel,viewport;
-uniform float time,debugView,modal;
+uniform float time,debugView,modal,fullColor;
 uniform vec3 zoneCenter[3],zoneRadius[3],storyCenter[3],storyRadius[3];
 uniform vec3 lit,explored;
 varying vec2 vUv;
@@ -51,8 +55,7 @@ void main(){
  if(depth>=.999999){gl_FragColor=vec4(0.,0.,0.,1.);return;}
  vec4 vp=invProjection*vec4(vUv*2.-1.,depth*2.-1.,1.);vp/=vp.w;
  vec3 world=(camWorld*vp).xyz;
- vec3 color=texture2D(tColor,vUv).rgb*1.12;
- color=clamp((color*(2.51*color+.03))/(color*(2.43*color+.59)+.14),0.,1.);
+ vec3 color=sourceBlenderLook(texture2D(tColor,vUv).rgb);
  vec4 ns=texture2D(tNormal,vUv);vec3 n=ns.xyz;
  float halftone=clamp((1.-ns.a)*2.,0.,1.);
  float edge=0.;float dz=0.;
@@ -73,7 +76,7 @@ void main(){
  }
  float fill=(.018+.025*max(n.z,.0));
  vec3 ink=vec3(fill+edge*.78);
- vec3 outColor=mix(ink*reveal,color,colorMask);
+ vec3 outColor=mix(ink*reveal,color,max(colorMask,fullColor));
  // Keep the occluder recognizable as sparse neutral ink, including dark portions.
  outColor=mix(outColor,vec3(.11),halftone);
  if(debugView>1.5)outColor=color;else if(debugView>.5)outColor=mix(ink,vec3(.11),halftone);
@@ -87,21 +90,23 @@ export class VisualStates{
   this.composedRT=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
   this.colorRT=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
   this.normalRT=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
-  this.normalRT.samples=mobile?0:2;
+  this.colorRT.samples=mobile?0:4;
+  this.normalRT.samples=mobile?0:4;
   this.normalRT.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
   model.traverse(o=>{
    if(!o.isMesh)return;
    const name=o.userData.sourceName||o.name,m=o.material;
    if(o.userData.exterior){o.visible=false;return;}
-   const ceiling=/^Ceiling/.test(name);
+   const ceiling=/^Ceiling/.test(name)||/Ceiling matte ivory/.test(m.name);
    const architectural=/Warm ivory painted plaster/.test(m.name)||ceiling||(/Ivory satin joinery_cutaway/.test(m.name));
    const normal=new THREE.MeshNormalMaterial({side:m.side});
    if(architectural){o.material=m.clone();injectCut(o.material,this.walls,ceiling);injectCut(normal,this.walls,ceiling);o.castShadow=false;}
    if(!architectural){o.material=m.clone();applyForegroundHalftone(o.material,this.foreground);applyForegroundHalftone(normal,this.foreground,true);}
+   applyBakedMaterial(o.material);
    this.entries.push({object:o,color:o.material,normal,skip:m.transparent&&m.opacity<.2});
   });
   const ls=['left','desk','bedside'],ss=['cello','boots','laptop'];
-  this.uniforms={tColor:{value:this.colorRT.texture},tNormal:{value:this.normalRT.texture},tDepth:{value:this.normalRT.depthTexture},invProjection:{value:camera.projectionMatrixInverse},camWorld:{value:camera.matrixWorld},pixel:{value:new THREE.Vector2()},viewport:{value:new THREE.Vector2()},time:{value:0},debugView:{value:0},modal:{value:0},zoneCenter:{value:ls.map(k=>new THREE.Vector3(...objects[k].zone))},zoneRadius:{value:ls.map(k=>new THREE.Vector3(...objects[k].radius))},storyCenter:{value:ss.map(k=>new THREE.Vector3(...objects[k].anchor))},storyRadius:{value:ss.map(k=>new THREE.Vector3(...objects[k].radius))},lit:{value:new THREE.Vector3()},explored:{value:new THREE.Vector3()}};
+  this.uniforms={blenderLookLut:blenderLookTexture,toneMappingExposure:{value:renderer.toneMappingExposure},fullColor:{value:0},tColor:{value:this.colorRT.texture},tNormal:{value:this.normalRT.texture},tDepth:{value:this.normalRT.depthTexture},invProjection:{value:camera.projectionMatrixInverse},camWorld:{value:camera.matrixWorld},pixel:{value:new THREE.Vector2()},viewport:{value:new THREE.Vector2()},time:{value:0},debugView:{value:0},modal:{value:0},zoneCenter:{value:ls.map(k=>new THREE.Vector3(...objects[k].zone))},zoneRadius:{value:ls.map(k=>new THREE.Vector3(...objects[k].radius))},storyCenter:{value:ss.map(k=>new THREE.Vector3(...objects[k].anchor))},storyRadius:{value:ss.map(k=>new THREE.Vector3(...objects[k].radius))},lit:{value:new THREE.Vector3()},explored:{value:new THREE.Vector3()}};
   this.quadScene=new THREE.Scene();this.quadCamera=new THREE.Camera();this.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,fragmentShader:fragment,depthTest:false,depthWrite:false,toneMapped:false}));this.quadScene.add(this.quad);
   this.blurScene=new THREE.Scene();this.blurQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:{tex:{value:this.composedRT.texture},pixel:this.uniforms.pixel,strength:this.uniforms.modal},vertexShader:vertex,fragmentShader:`uniform sampler2D tex;uniform vec2 pixel;uniform float strength;varying vec2 vUv;void main(){vec2 s=pixel*strength*2.6;vec3 c=texture2D(tex,vUv).rgb*.2;c+=texture2D(tex,vUv+vec2(s.x,0.)).rgb*.12;c+=texture2D(tex,vUv-vec2(s.x,0.)).rgb*.12;c+=texture2D(tex,vUv+vec2(0.,s.y)).rgb*.12;c+=texture2D(tex,vUv-vec2(0.,s.y)).rgb*.12;c+=texture2D(tex,vUv+s).rgb*.08;c+=texture2D(tex,vUv-s).rgb*.08;c+=texture2D(tex,vUv+vec2(s.x,-s.y)).rgb*.08;c+=texture2D(tex,vUv+vec2(-s.x,s.y)).rgb*.08;gl_FragColor=vec4(c,1.);
 #include <colorspace_fragment>
@@ -117,9 +122,9 @@ export class VisualStates{
  resize(w,h){this.composedRT.setSize(w,h);this.colorRT.setSize(w,h);this.normalRT.setSize(w,h);this.uniforms.pixel.value.set(1/w,1/h);this.uniforms.viewport.value.set(w,h);}
  render(){
   const r=this.renderer,u=this.uniforms;
-  const reveal=u.debugView.value>0||u.lit.value.lengthSq()>.0001||u.explored.value.lengthSq()>.0001;
+  const reveal=u.fullColor.value>0||u.debugView.value>0||u.lit.value.lengthSq()>.0001||u.explored.value.lengthSq()>.0001;
   if(!reveal){r.setRenderTarget(null);r.clear();return;}
-  if(u.explored.value.lengthSq()>.0001||u.debugView.value>1.5){r.setRenderTarget(this.colorRT);r.clear();r.render(this.scene,this.camera);}
+  if(u.fullColor.value>0||u.explored.value.lengthSq()>.0001||u.debugView.value>1.5){r.setRenderTarget(this.colorRT);r.clear();r.render(this.scene,this.camera);}
   for(const e of this.entries){e.object.material=e.normal;if(e.skip)e.object.visible=false;}
   r.setRenderTarget(this.normalRT);r.clear();r.render(this.scene,this.camera);
   for(const e of this.entries){e.object.material=e.color;if(e.skip)e.object.visible=true;}

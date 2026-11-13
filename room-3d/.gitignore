@@ -4,3 +4,6 @@ room-web/
 tests/*
 !tests/exploration.mjs
 !tests/halftone.mjs
+
+!tests/baked-room.mjs
+tools/baked-room/

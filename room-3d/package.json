@@ -7,7 +7,8 @@
     "dev": "node server.mjs",
     "build": "node build.mjs",
     "test": "node tests/exploration.mjs",
-    "test:halftone": "node tests/halftone.mjs"
+    "test:halftone": "node tests/halftone.mjs",
+    "test:baked": "node tests/baked-room.mjs"
   },
   "dependencies": {
     "three": "0.187.0"

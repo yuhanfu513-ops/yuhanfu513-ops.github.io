@@ -1,4 +1,4 @@
-// Coordinates measured from the render-visible V9 Blender scene. GLB stays unchanged.
+// Coordinates measured from the render-visible V9 Blender scene. The baked web export preserves these object positions.
 export const objects={
  left:{type:'lamp',label:'左侧玻璃灯',min:[.82,1.50,-4.23],max:[.98,1.85,-3.95],anchor:[.90,1.75,-4.03],zone:[.82,.83,-3.64],radius:[1.15,1.65,1.13]},
  desk:{type:'lamp',label:'书桌台灯',min:[2.94,.79,-3.28],max:[3.49,1.54,-2.69],anchor:[3.12,1.39,-2.79],zone:[3.08,1.14,-2.94],radius:[1.04,1.48,1.24]},

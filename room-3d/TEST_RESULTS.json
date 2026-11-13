@@ -1,14 +1,15 @@
 {
+  "date": "2026-11-13",
   "regression": [
     {
       "mobile": false,
       "errors": [],
       "glbLoadsPerInitialSession": 1,
       "memory": {
-        "calls": 803,
-        "triangles": 4664099,
-        "geometries": 282,
-        "textures": 38
+        "calls": 937,
+        "triangles": 6150024,
+        "geometries": 351,
+        "textures": 49
       }
     },
     {
@@ -16,14 +17,54 @@
       "errors": [],
       "glbLoadsPerInitialSession": 1,
       "memory": {
-        "calls": 803,
-        "triangles": 4664099,
-        "geometries": 282,
-        "textures": 36
+        "calls": 937,
+        "triangles": 6150024,
+        "geometries": 351,
+        "textures": 47
       }
     },
     {
       "webglFallback": true
+    }
+  ],
+  "bakedRoom": [
+    {
+      "mobile": false,
+      "maps": {
+        "lightmapped": 287,
+        "normalMapped": 51
+      },
+      "textureBudget": {
+        "textures": 105,
+        "resized": 0,
+        "maxDimension": 4096
+      },
+      "stats": {
+        "calls": 937,
+        "triangles": 6150024,
+        "geometries": 335,
+        "textures": 49
+      },
+      "errors": []
+    },
+    {
+      "mobile": true,
+      "maps": {
+        "lightmapped": 287,
+        "normalMapped": 51
+      },
+      "textureBudget": {
+        "textures": 105,
+        "resized": 4,
+        "maxDimension": 2048
+      },
+      "stats": {
+        "calls": 937,
+        "triangles": 6150024,
+        "geometries": 335,
+        "textures": 47
+      },
+      "errors": []
     }
   ],
   "foregroundHalftone": [
@@ -38,7 +79,7 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 282
+      "stableGeometryCount": 351
     },
     {
       "mobile": true,
@@ -51,21 +92,21 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 282
+      "stableGeometryCount": 351
     }
   ],
+  "originalBlendChanged": false,
+  "bakedWebAssetAdded": true,
+  "bakedAssetBytes": 24491612,
+  "bakedAssetSha256": "3ef29f1e0a9d98a50319c7b0e09ac0e260c3d978422135733437a9eee4b4906b",
   "visualChecks": [
-    "West: bookshelf/radiator reveal desk and bed",
-    "East: headboard reveals bed contents",
-    "North: wardrobe/window reveal protected lamp and cello"
+    "whole room",
+    "close view, rabbit faces",
+    "glass cabinets",
+    "desktop and mobile layout"
   ],
-  "protectedIds": [
-    "left",
-    "desk",
-    "bedside",
-    "cello",
-    "boots",
-    "laptop"
-  ],
-  "modelChanged": false
+  "limitations": [
+    "Mobile tested by Chrome touch emulation, not physical Safari",
+    "Static irradiance; real-time reflections and translucent shade approximate Blender"
+  ]
 }

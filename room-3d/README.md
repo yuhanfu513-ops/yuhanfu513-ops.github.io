@@ -1,6 +1,6 @@
 # Bill · 三维房间探索
 
-基于原有 V9 房间 GLB 的独立 Three.js 个人网站。原有二维网站和 Blender 模型不变。
+基于最新 V9 Blender 模型烘焙导出的独立 Three.js 个人网站。原有二维网站和 Blender 模型不变。
 
 ## 运行
 
@@ -40,3 +40,7 @@
 
 网站保持现有私有访问配置。Figma 新区域：
 https://www.figma.com/design/mRlAHBZIFLDeXpYuzqu6Ko?node-id=258-26
+
+## Blender 烘焙更新
+
+点击右上角“房间原貌”查看完整彩色房间。新增颜色、法线、光照贴图和 Blender 色彩查找表，保留点灯、故事和前景漫画网点交互。原始模型未改动。生成方式与限制见 [BAKING.md](BAKING.md)。新增验收：`npm run test:baked`。
