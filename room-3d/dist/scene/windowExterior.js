@@ -1,3 +1,4 @@
+import {daylight} from './daylight.js';
 import {foregroundVolumes} from './foregroundHalftone.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import * as THREE from 'three';
@@ -44,8 +45,8 @@ export function createWindowExterior(model){
   return fade;
  }
  `;
- const uniforms={portalFade:{value:0},view:{value:target.texture},resolution:{value:new THREE.Vector2(1,1)}};
- const material=new THREE.ShaderMaterial({uniforms,vertexShader:vertex,fragmentShader:`uniform sampler2D view;uniform vec2 resolution;${visibility}void main(){portalVisibility();gl_FragColor=texture2D(view,gl_FragCoord.xy/resolution);}`,side:THREE.FrontSide,toneMapped:false});
+ const uniforms={roomDaylight:daylight,portalFade:{value:0},view:{value:target.texture},resolution:{value:new THREE.Vector2(1,1)}};
+ const material=new THREE.ShaderMaterial({uniforms,vertexShader:vertex,fragmentShader:`uniform sampler2D view;uniform float roomDaylight;uniform vec2 resolution;${visibility}void main(){portalVisibility();gl_FragColor=texture2D(view,gl_FragCoord.xy/resolution);gl_FragColor.rgb*=roomDaylight;}`,side:THREE.FrontSide,toneMapped:false});
  const normal=new THREE.ShaderMaterial({uniforms,vertexShader:vertex,fragmentShader:`${visibility}void main(){float fade=portalVisibility();gl_FragColor=vec4(0.,0.,0.,1.-fade*.5);}`,side:THREE.FrontSide});
  const portals=[];
  const add=(w,h,p,rot)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),material);m.position.set(...p);m.rotation.y=rot;m.userData.daylightPortal=true;m.userData.portalNormal=normal;model.add(m);m.updateWorldMatrix(true,false);m.userData.corners=[[-w/2,h/2,0],[w/2,h/2,0],[w/2,-h/2,0],[-w/2,-h/2,0]].map(p=>new THREE.Vector3(...p).applyMatrix4(m.matrixWorld));m.userData.facing=new THREE.Vector3(0,0,1).transformDirection(m.matrixWorld);portals.push(m);};
@@ -81,7 +82,7 @@ export function createWindowExterior(model){
   stats(){return {visible,frames,fade:uniforms.portalFade.value,portals:portals.map(p=>p.visible)};},
   render(renderer,camera){
    updateFade(camera);camera.updateMatrixWorld();matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix);
-   visible=camera.position.z>-4.29&&uniforms.portalFade.value<.997&&frustum.intersectsBox(aperture);
+   visible=daylight.value>.001&&camera.position.z>-4.29&&uniforms.portalFade.value<.997&&frustum.intersectsBox(aperture);
    const clipping=visible?opening.map((p,i)=>{const plane=new THREE.Plane().setFromCoplanarPoints(camera.position,p,opening[(i+1)%4]);if(plane.distanceToPoint(openingCenter)<0)plane.negate();return plane;}).concat(frustum.planes):[];
    let any=false;
    for(const portal of portals){

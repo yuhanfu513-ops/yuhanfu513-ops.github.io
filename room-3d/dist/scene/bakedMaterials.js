@@ -1,3 +1,4 @@
+import {daylight,nightLamps} from './daylight.js';
 import {blenderLookTexture,blenderLookGLSL} from './blenderLook.js';
 // Irradiance is baked in Cycles with the source daylight, warm lamps and bounce
 // lighting. Keep it separate from albedo and normals; moving highlights stay PBR.
@@ -11,17 +12,29 @@ export function applyBakedMaterial(material){
  const previous=material.onBeforeCompile,oldKey=material.customProgramCacheKey.bind(material);
  material.onBeforeCompile=(shader,renderer)=>{
   previous(shader,renderer);shader.uniforms.blenderLookLut=blenderLookTexture;
-  shader.fragmentShader=blenderLookGLSL+'\n'+shader.fragmentShader;
+  shader.uniforms.roomDaylight=daylight;shader.uniforms.nightLamps=nightLamps;
+  shader.vertexShader='varying vec3 vLightingWorld;\n'+shader.vertexShader;
+  shader.vertexShader=shader.vertexShader.replace('#include <project_vertex>',`#include <project_vertex>
+   vec4 lightingP=vec4(transformed,1.);
+   #ifdef USE_INSTANCING
+   lightingP=instanceMatrix*lightingP;
+   #endif
+   vLightingWorld=(modelMatrix*lightingP).xyz;`);
+  shader.fragmentShader='varying vec3 vLightingWorld;uniform float roomDaylight;uniform vec3 nightLamps;\n'+blenderLookGLSL+'\n'+shader.fragmentShader;
   shader.fragmentShader=shader.fragmentShader.replace('#include <tonemapping_fragment>',`#ifdef TONE_MAPPING
  gl_FragColor.rgb=sourceBlenderLook(gl_FragColor.rgb);
 #endif`);
   if(range&&material.lightMap)shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>',`#include <lights_fragment_end>
   #ifdef USE_LIGHTMAP
    reflectedLight.directDiffuse=vec3(0.);
-   reflectedLight.indirectDiffuse=${/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'max(texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity,vec3(.48))':'texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity'}*diffuseColor.rgb*(1.-metalnessFactor);
+   vec3 warmNight=vec3(.006,.004,.002);
+   warmNight+=vec3(1.,.52,.19)*nightLamps.x*.24/(.08+pow(distance(vLightingWorld,vec3(.90,1.75,-4.03)),2.));
+   warmNight+=vec3(1.,.64,.31)*nightLamps.y*.30/(.08+pow(distance(vLightingWorld,vec3(3.12,1.39,-2.79)),2.));
+   warmNight+=vec3(1.,.55,.22)*nightLamps.z*.26/(.08+pow(distance(vLightingWorld,vec3(3.23,1.29,-1.74)),2.));
+   reflectedLight.indirectDiffuse=mix(warmNight,${/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'max(texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity,vec3(.48))':'texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity'},roomDaylight)*diffuseColor.rgb*(1.-metalnessFactor);
   #endif`);
  };
- material.customProgramCacheKey=()=>oldKey()+'-cycles-irradiance-v2-'+(/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'footwear':'room');material.needsUpdate=true;return Boolean(range&&material.lightMap);
+ material.customProgramCacheKey=()=>oldKey()+'-cycles-night-day-v3-'+(/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'footwear':'room');material.needsUpdate=true;return Boolean(range&&material.lightMap);
 }
 
 export function fitTextureBudget(model,renderer,mobile){

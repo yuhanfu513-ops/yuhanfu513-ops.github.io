@@ -8,7 +8,7 @@ try{
 for(const mobile of [false,true]){
  const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1440,height:1000},isMobile:mobile,hasTouch:mobile}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('http://127.0.0.1:4173/?reset=1');await page.waitForFunction(()=>window.roomExplorer?.loaded,{timeout:150000});await page.evaluate(()=>roomExplorer.setFullRoom(true));
+ await page.goto('http://127.0.0.1:4173/?reset=1');await page.waitForFunction(()=>window.roomExplorer?.loaded,{timeout:150000});await page.evaluate(()=>{roomExplorer.setFullRoom(true);roomExplorer.activate("curtain")});await page.waitForFunction(()=>roomExplorer.getCurtain().daylight>.999);
  await page.addStyleTag({content:'header,.opening,footer,#hotspots,#cursor{visibility:hidden!important}'});
  const states=[];
  for(const [name,pos,expected]of [['window',[1.8,1.9,.4],true],['cabinet',[6,2.6,-1.8],null],['side',[7,3,-4],false],['back',[2,2,-9],false],['outside-bay',[2,2,-4.6],false],['high',[2,9,-6],false],['return-window',[1.8,1.9,.4],true]]){

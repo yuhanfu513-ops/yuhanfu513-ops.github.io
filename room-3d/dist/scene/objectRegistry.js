@@ -30,6 +30,7 @@ export function createRegistry(model){
   const box=new THREE.Box3(new THREE.Vector3(...spec.min),new THREE.Vector3(...spec.max));
   const candidates=meshes.filter(o=>{
    const n=o.name+' '+o.material.name;
+   if(id==='curtain')return /Cars printed offwhite curtain/.test(n);
    if(id==='cello')return !/floor|plaster|curtain|window|wood atlas/i.test(n);
    if(id==='boots')return /Shoes |V4 boot/.test(n);
    if(id==='laptop')return /Laptop|MacBook/.test(n);

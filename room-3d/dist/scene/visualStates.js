@@ -1,3 +1,4 @@
+import {daylight} from './daylight.js';
 import * as THREE from 'three';
 import {applyForegroundHalftone,createForegroundUniforms} from './foregroundHalftone.js';
 import {blenderLookTexture,blenderLookGLSL} from './blenderLook.js';
@@ -44,7 +45,7 @@ ${blenderLookGLSL}
 uniform sampler2D tColor,tNormal,tDepth;
 uniform mat4 invProjection,camWorld;
 uniform vec2 pixel,viewport;
-uniform float time,debugView,modal,fullColor;
+uniform float time,debugView,modal,fullColor,roomDaylight;
 uniform vec3 zoneCenter[3],zoneRadius[3],storyCenter[3],storyRadius[3];
 uniform vec3 lit,explored;
 varying vec2 vUv;
@@ -69,14 +70,17 @@ void main(){
   dz=max(dz,abs(other.z/other.w-vp.z)/max(.5,-vp.z)*solid);
  }
  edge=max(smoothstep(.07,.32,edge),smoothstep(.002,.012,dz));
- float reveal=0.,colorMask=0.;
+ float curtainArea=step(1.04,world.x)*step(world.x,3.02)*step(.85,world.y)*step(world.y,2.77)*step(-4.29,world.z)*step(world.z,-4.07);
+ float reveal=curtainArea*.18,colorMask=curtainArea*roomDaylight;
  for(int i=0;i<3;i++){
   reveal=max(reveal,zone(world,zoneCenter[i],zoneRadius[i])*lit[i]);
   colorMask=max(colorMask,zone(world,storyCenter[i],storyRadius[i])*explored[i]);
  }
+ float daylightZone=zone(world,vec3(2.,1.,-3.),vec3(2.1,1.9,2.7))*roomDaylight;
+ reveal=max(reveal,daylightZone);colorMask=max(colorMask,daylightZone);
  float fill=(.018+.025*max(n.z,.0));
  vec3 ink=vec3(fill+edge*.78);
- vec3 outColor=mix(ink*reveal,color,max(colorMask,fullColor));
+ vec3 outColor=mix(ink*reveal,color,max(colorMask,fullColor*(1.-curtainArea*(1.-roomDaylight))));
  if(length(n)<.01)outColor=color;
  // Keep the occluder recognizable as sparse neutral ink, including dark portions.
  outColor=mix(outColor,vec3(.11),halftone);
@@ -103,7 +107,7 @@ export class VisualStates{
    const architectural=o.userData.cutaway||/Warm ivory painted plaster/.test(m.name)||ceiling||(/Ivory satin joinery_cutaway/.test(m.name));
    const normal=new THREE.MeshNormalMaterial({side:m.side});normal.name=m.name;
    if(architectural){o.material=m.clone();injectCut(o.material,this.walls,ceiling);injectCut(normal,this.walls,ceiling);o.castShadow=false;}
-   if(!architectural){o.material=m.clone();applyForegroundHalftone(o.material,this.foreground);applyForegroundHalftone(normal,this.foreground,true);}
+   if(!architectural){o.material=m.clone();if(!o.userData.storyCurtain){applyForegroundHalftone(o.material,this.foreground);applyForegroundHalftone(normal,this.foreground,true);}}
    if(m.userData.lampChimney){
     // Keep the actual transparent chimney in the color pass. Only its grazing
     // contour writes depth in the ink pass, so the filament remains visible.
@@ -116,7 +120,7 @@ export class VisualStates{
    this.entries.push({object:o,color:o.material,normal,skip:m.transparent&&m.opacity<.2&&!m.userData.lampChimney});
   });
   const ls=['left','desk','bedside'],ss=['cello','boots','laptop'];
-  this.uniforms={blenderLookLut:blenderLookTexture,toneMappingExposure:{value:renderer.toneMappingExposure},fullColor:{value:0},tColor:{value:this.colorRT.texture},tNormal:{value:this.normalRT.texture},tDepth:{value:this.normalRT.depthTexture},invProjection:{value:camera.projectionMatrixInverse},camWorld:{value:camera.matrixWorld},pixel:{value:new THREE.Vector2()},viewport:{value:new THREE.Vector2()},time:{value:0},debugView:{value:0},modal:{value:0},zoneCenter:{value:ls.map(k=>new THREE.Vector3(...objects[k].zone))},zoneRadius:{value:ls.map(k=>new THREE.Vector3(...objects[k].radius))},storyCenter:{value:ss.map(k=>new THREE.Vector3(...objects[k].anchor))},storyRadius:{value:ss.map(k=>new THREE.Vector3(...objects[k].radius))},lit:{value:new THREE.Vector3()},explored:{value:new THREE.Vector3()}};
+  this.uniforms={roomDaylight:daylight,blenderLookLut:blenderLookTexture,toneMappingExposure:{value:renderer.toneMappingExposure},fullColor:{value:0},tColor:{value:this.colorRT.texture},tNormal:{value:this.normalRT.texture},tDepth:{value:this.normalRT.depthTexture},invProjection:{value:camera.projectionMatrixInverse},camWorld:{value:camera.matrixWorld},pixel:{value:new THREE.Vector2()},viewport:{value:new THREE.Vector2()},time:{value:0},debugView:{value:0},modal:{value:0},zoneCenter:{value:ls.map(k=>new THREE.Vector3(...objects[k].zone))},zoneRadius:{value:ls.map(k=>new THREE.Vector3(...objects[k].radius))},storyCenter:{value:ss.map(k=>new THREE.Vector3(...objects[k].anchor))},storyRadius:{value:ss.map(k=>new THREE.Vector3(...objects[k].radius))},lit:{value:new THREE.Vector3()},explored:{value:new THREE.Vector3()}};
   this.quadScene=new THREE.Scene();this.quadCamera=new THREE.Camera();this.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,fragmentShader:fragment,depthTest:false,depthWrite:false,toneMapped:false}));this.quadScene.add(this.quad);
   this.blurScene=new THREE.Scene();this.blurQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:{tex:{value:this.composedRT.texture},pixel:this.uniforms.pixel,strength:this.uniforms.modal},vertexShader:vertex,fragmentShader:`uniform sampler2D tex;uniform vec2 pixel;uniform float strength;varying vec2 vUv;void main(){vec2 s=pixel*strength*2.6;vec3 c=texture2D(tex,vUv).rgb*.2;c+=texture2D(tex,vUv+vec2(s.x,0.)).rgb*.12;c+=texture2D(tex,vUv-vec2(s.x,0.)).rgb*.12;c+=texture2D(tex,vUv+vec2(0.,s.y)).rgb*.12;c+=texture2D(tex,vUv-vec2(0.,s.y)).rgb*.12;c+=texture2D(tex,vUv+s).rgb*.08;c+=texture2D(tex,vUv-s).rgb*.08;c+=texture2D(tex,vUv+vec2(s.x,-s.y)).rgb*.08;c+=texture2D(tex,vUv+vec2(-s.x,s.y)).rgb*.08;gl_FragColor=vec4(c,1.);
 #include <colorspace_fragment>
@@ -133,7 +137,7 @@ export class VisualStates{
  render(){
   const r=this.renderer,u=this.uniforms;
   const reveal=u.fullColor.value>0||u.debugView.value>0||u.lit.value.lengthSq()>.0001||u.explored.value.lengthSq()>.0001;
-  if(!reveal){r.setRenderTarget(null);r.clear();return;}
+
   r.setRenderTarget(this.colorRT);r.clear();r.render(this.scene,this.camera);
   for(const e of this.entries){e.object.material=e.normal;if(e.skip)e.object.visible=false;}
   r.setRenderTarget(this.normalRT);r.clear();r.render(this.scene,this.camera);

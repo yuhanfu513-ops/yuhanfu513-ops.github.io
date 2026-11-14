@@ -79,7 +79,7 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 336
+      "stableGeometryCount": 324
     },
     {
       "mobile": true,
@@ -92,7 +92,7 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 335
+      "stableGeometryCount": 324
     }
   ],
   "originalBlendChanged": false,
@@ -375,5 +375,39 @@
       "Outside/fully faded/unseen portals stop exterior renders; returning resumes",
       "Chrome desktop and touch emulation; physical Safari not tested"
     ]
-  }
+  },
+  "curtainStory": [
+    {
+      "mobile": false,
+      "middle": {
+        "progress": 0.34632405962771823,
+        "daylight": 0.1817973218420561,
+        "parts": 1,
+        "opened": true
+      },
+      "open": {
+        "progress": 1,
+        "daylight": 1,
+        "parts": 1,
+        "opened": true
+      },
+      "errors": []
+    },
+    {
+      "mobile": true,
+      "middle": {
+        "progress": 0.33833377683195265,
+        "daylight": 0.17569843991242565,
+        "parts": 1,
+        "opened": true
+      },
+      "open": {
+        "progress": 1,
+        "daylight": 1,
+        "parts": 1,
+        "opened": true
+      },
+      "errors": []
+    }
+  ]
 }
