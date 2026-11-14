@@ -3,12 +3,14 @@ import {objects} from '../content/objects.js';
 // Measured spatial groups: merged materials can contain unrelated props, so never
 // fade a whole material or trust its first exported source name.
 export const foregroundVolumes=[
+ {id:'pegboardShelf',min:[2.87,1.36,-3.64],max:[3.46,2.25,-3.32]},
+ {id:'portablePanel',min:[.40,.01,-3.25],max:[1.12,.90,-2.35]},
  {id:'bookcase',min:[-.01,.18,-2.88],max:[.55,2.90,-.86]},
  {id:'wardrobe',min:[2.70,.18,-4.32],max:[3.53,2.84,-3.48]},
  {id:'headboard',min:[3.22,.30,-1.65],max:[3.58,1.66,.03]},
  {id:'radiatorAndFrame',min:[0,.18,-3.80],max:[.18,2.12,-2.82]},
  {id:'window',min:[1.10,.18,-5.02],max:[2.91,2.84,-3.94]},
- {id:'chestAndPoster',min:[.12,.18,-4.30],max:[1.20,2.68,-3.70]},
+ {id:'chestAndPoster',min:[.12,.18,-4.30],max:[1.22,2.68,-3.48]},
  {id:'door',min:[-.18,.08,-.96],max:[1.20,2.35,.18]},
  {id:'eastWallAttachments',min:[3.42,.12,-4.35],max:[3.70,2.85,.10]},
  {id:'southWallAttachments',min:[-.18,.12,-.08],max:[3.70,2.85,.18]},
@@ -23,23 +25,23 @@ export function createForegroundUniforms(renderer){return {
 };}
 const pars=`
 varying vec3 vHtWorld;
-uniform float htEnabled,htPixelRatio;
-uniform vec3 htMin[11],htMax[11],htProtectedMin[6],htProtectedMax[6];
+uniform float htEnabled,htPixelRatio,htProtect;
+uniform vec3 htMin[13],htMax[13],htProtectedMin[6],htProtectedMax[6];
 float htInside(vec3 p,vec3 lo,vec3 hi){return step(lo.x,p.x)*step(lo.y,p.y)*step(lo.z,p.z)*step(p.x,hi.x)*step(p.y,hi.y)*step(p.z,hi.z);}
 float htAmount(vec3 p){
  if(htEnabled<.5)return 0.;
- for(int i=0;i<6;i++){if(htInside(p,htProtectedMin[i],htProtectedMax[i])>.5)return 0.;}
- float eligible=0.;for(int i=0;i<11;i++)eligible=max(eligible,htInside(p,htMin[i],htMax[i]));
+ if(htProtect>.5)for(int i=0;i<6;i++){if(htInside(p,htProtectedMin[i],htProtectedMax[i])>.5)return 0.;}
+ float eligible=0.;vec3 parent=p;for(int i=0;i<13;i++){if(htInside(p,htMin[i],htMax[i])>.5){eligible=1.;parent=(htMin[i]+htMax[i])*.5;break;}}
  if(eligible<.5)return 0.;
  vec3 view=normalize(cameraPosition-vec3(1.75,.95,-2.15));
- float front=dot(p.xz-vec2(1.75,-2.15),normalize(view.xz));
- return smoothstep(-.12,.68,front)*smoothstep(.12,.55,length(view.xz))*smoothstep(.18,.43,p.y);
+ float front=dot(parent.xz-vec2(1.75,-2.15),normalize(view.xz));
+ return max(smoothstep(-.12,.68,front),smoothstep(.65,.95,view.y))*max(smoothstep(.12,.55,length(view.xz)),smoothstep(.65,.95,view.y))*smoothstep(.015,.08,p.y);
 }
 `;
 export function applyForegroundHalftone(material,uniforms,normal=false){
  const before=material.onBeforeCompile,cache=material.customProgramCacheKey.bind(material);
  material.onBeforeCompile=shader=>{
-  before(shader);Object.assign(shader.uniforms,uniforms);
+  before(shader);Object.assign(shader.uniforms,uniforms);shader.uniforms.htProtect={value:/Cello|V4 boot|Shoes |lamp|Laptop|MacBook/i.test(material.name)?1:0};
   shader.vertexShader='varying vec3 vHtWorld;\n'+shader.vertexShader;
   shader.vertexShader=shader.vertexShader.replace('#include <project_vertex>',`#include <project_vertex>
   vec4 htP=vec4(transformed,1.);

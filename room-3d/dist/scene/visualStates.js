@@ -77,6 +77,7 @@ void main(){
  float fill=(.018+.025*max(n.z,.0));
  vec3 ink=vec3(fill+edge*.78);
  vec3 outColor=mix(ink*reveal,color,max(colorMask,fullColor));
+ if(length(n)<.01)outColor=color;
  // Keep the occluder recognizable as sparse neutral ink, including dark portions.
  outColor=mix(outColor,vec3(.11),halftone);
  if(debugView>1.5)outColor=color;else if(debugView>.5)outColor=mix(ink,vec3(.11),halftone);
@@ -95,11 +96,12 @@ export class VisualStates{
   this.normalRT.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
   model.traverse(o=>{
    if(!o.isMesh)return;
+   if(o.userData.daylightPortal){this.entries.push({object:o,color:o.material,normal:o.userData.portalNormal,skip:false});return;}
    const name=o.userData.sourceName||o.name,m=o.material;
    if(o.userData.exterior){o.visible=false;return;}
    const ceiling=/^Ceiling/.test(name)||/Ceiling matte ivory/.test(m.name);
    const architectural=o.userData.cutaway||/Warm ivory painted plaster/.test(m.name)||ceiling||(/Ivory satin joinery_cutaway/.test(m.name));
-   const normal=new THREE.MeshNormalMaterial({side:m.side});
+   const normal=new THREE.MeshNormalMaterial({side:m.side});normal.name=m.name;
    if(architectural){o.material=m.clone();injectCut(o.material,this.walls,ceiling);injectCut(normal,this.walls,ceiling);o.castShadow=false;}
    if(!architectural){o.material=m.clone();applyForegroundHalftone(o.material,this.foreground);applyForegroundHalftone(normal,this.foreground,true);}
    if(m.userData.lampChimney){
@@ -132,7 +134,7 @@ export class VisualStates{
   const r=this.renderer,u=this.uniforms;
   const reveal=u.fullColor.value>0||u.debugView.value>0||u.lit.value.lengthSq()>.0001||u.explored.value.lengthSq()>.0001;
   if(!reveal){r.setRenderTarget(null);r.clear();return;}
-  if(u.fullColor.value>0||u.explored.value.lengthSq()>.0001||u.debugView.value>1.5){r.setRenderTarget(this.colorRT);r.clear();r.render(this.scene,this.camera);}
+  r.setRenderTarget(this.colorRT);r.clear();r.render(this.scene,this.camera);
   for(const e of this.entries){e.object.material=e.normal;if(e.skip)e.object.visible=false;}
   r.setRenderTarget(this.normalRT);r.clear();r.render(this.scene,this.camera);
   for(const e of this.entries){e.object.material=e.color;if(e.skip)e.object.visible=true;}

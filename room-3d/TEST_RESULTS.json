@@ -79,7 +79,7 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 351
+      "stableGeometryCount": 336
     },
     {
       "mobile": true,
@@ -92,7 +92,7 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 351
+      "stableGeometryCount": 336
     }
   ],
   "originalBlendChanged": false,
@@ -120,5 +120,23 @@
     ],
     "lampChimneyContour": "visible; filament remains visible",
     "storyRadius": "expanded surrounding furniture and floor"
+  },
+  "windowAndStoryRevision": {
+    "date": "2026-11-14",
+    "desktopAndTouchStoryImagesLoaded": true,
+    "zoomInsideOldLimit": [
+      1.75,
+      1,
+      -1.8
+    ],
+    "browserErrors": [],
+    "exterior": "Separate daylight scene, inside-facing bay-window portal; black outer background",
+    "materials": "Source ivory colors with minimum irradiance correction",
+    "views": [
+      "window",
+      "back",
+      "cabinet",
+      "high"
+    ]
   }
 }

@@ -44,3 +44,6 @@ https://www.figma.com/design/mRlAHBZIFLDeXpYuzqu6Ko?node-id=258-26
 ## Blender 烘焙更新
 
 点击右上角“房间原貌”查看完整彩色房间。新增颜色、法线、光照贴图和 Blender 色彩查找表，保留点灯、故事和前景漫画网点交互。原始模型未改动。生成方式与限制见 [BAKING.md](BAKING.md)。新增验收：`npm run test:baked`。
+
+
+2026-11-14 更新：故事子页使用原二维 Figma 对应素材；取消视距上下限；新增仅在飘窗内可见的独立日景；补齐遮挡附件、暖气和白柜颜色。`node tests/nov14.mjs` 验证图片载入与近距离视角。

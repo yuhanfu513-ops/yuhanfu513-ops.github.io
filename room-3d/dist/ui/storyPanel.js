@@ -9,7 +9,7 @@ export function setupStoryPanel(store,onOpen,onClose){
   document.documentElement.style.setProperty('--orange',help?'#ff8943':stories[id].color);
   if(help){for(const entry of helpContent){const h=document.createElement('h3');h.textContent=entry.title;const p=document.createElement('p');p.textContent=entry.body;body.append(h,p)}}else{for(const text of stories[id].paragraphs){const p=document.createElement('p');p.textContent=text;body.append(p)}}
   document.querySelector('#story-kicker').textContent=help?'LET’S MAKE SOMETHING TOGETHER':'A PIECE OF MY STORY';
-  document.querySelector('#showcase').hidden=help;dialog.showModal();document.body.classList.add('story-open');body.scrollTop=0;
+  const showcase=document.querySelector('#showcase');showcase.hidden=help;showcase.replaceChildren();if(!help){const image=new Image();image.src='./assets/story-'+id+'.png';image.alt=stories[id].title;showcase.append(image);}dialog.showModal();document.body.classList.add('story-open');body.scrollTop=0;
   // One browser layout boundary starts CSS transitions; animation lives in the main render loop.
   void dialog.offsetWidth;dialog.classList.add('visible');document.querySelector('#close-story').focus();fades();onOpen(id);
  }
