@@ -11,3 +11,5 @@ tools/baked-room/
 !tests/fixes.mjs
 
 !tests/nov14.mjs
+
+!tests/window-stability.mjs

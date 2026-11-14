@@ -21,10 +21,16 @@ for(const mobile of [false,true]){
   const xy=await page.evaluate(id=>roomExplorer.getScreenPosition(id),id);await page.mouse.click(...xy);await page.waitForTimeout(600);
   assert.equal((await page.evaluate(()=>roomExplorer.state())).activeStory,id,`canvas story ${id}`);clicked.push(id);await page.keyboard.press('Escape');await page.waitForTimeout(650);
  }
- const stats=await page.evaluate(()=>roomExplorer.getStats());
  for(const [name,pos] of [['west',[-5,3,-2]],['east',[8,2,-1]],['north',[5,3,-9]]]){
   await page.evaluate(p=>roomExplorer.setCamera(p),pose(pos));await page.waitForTimeout(600);
   for(const enabled of [false,true]){await page.evaluate(on=>roomExplorer.setHalftone(on),enabled);await page.waitForTimeout(300);await page.screenshot({path:`../work/web-qa/halftone-${mobile?'mobile':'desktop'}-${name}-${enabled?'on':'off'}.png`});}
+ }
+ // Hidden portals deliberately allocate their GPU geometry only on first use.
+ // Check repeated visits after each tested view has actually been rendered.
+ const stats=await page.evaluate(()=>roomExplorer.getStats());
+ for(const pos of [[-5,3,-2],[8,2,-1],[5,3,-9]]){
+  await page.evaluate(p=>roomExplorer.setCamera(p),pose(pos));
+  for(const enabled of [false,true]){await page.evaluate(on=>roomExplorer.setHalftone(on),enabled);await page.waitForTimeout(150);}
  }
  assert.equal((await page.evaluate(()=>roomExplorer.getStats())).geometries,stats.geometries);
  if(!mobile){

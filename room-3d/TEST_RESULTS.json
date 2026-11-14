@@ -92,7 +92,7 @@
         "laptop"
       ],
       "errors": [],
-      "stableGeometryCount": 336
+      "stableGeometryCount": 335
     }
   ],
   "originalBlendChanged": false,
@@ -137,6 +137,243 @@
       "back",
       "cabinet",
       "high"
+    ]
+  },
+  "windowStabilityRevision": {
+    "date": "2026-11-14",
+    "tests": [
+      {
+        "mobile": false,
+        "states": [
+          {
+            "name": "window",
+            "near": 0.032660067360616385,
+            "far": 80,
+            "exterior": {
+              "visible": true,
+              "frames": 11,
+              "fade": 0,
+              "portals": [
+                true,
+                true,
+                true
+              ]
+            }
+          },
+          {
+            "name": "cabinet",
+            "near": 0.05486966374965314,
+            "far": 80,
+            "exterior": {
+              "visible": true,
+              "frames": 48,
+              "fade": 0.13291420624138425,
+              "portals": [
+                true,
+                true,
+                false
+              ]
+            }
+          },
+          {
+            "name": "side",
+            "near": 0.07118286310622804,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 53,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "back",
+            "near": 0.083214181483687,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 53,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "outside-bay",
+            "near": 0.032126624472546134,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 53,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "high",
+            "near": 0.9267855356785635,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 53,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "return-window",
+            "near": 0.032660067360616385,
+            "far": 80,
+            "exterior": {
+              "visible": true,
+              "frames": 84,
+              "fade": 0,
+              "portals": [
+                true,
+                true,
+                true
+              ]
+            }
+          }
+        ],
+        "flickerPixels": 4,
+        "cabinetFlickerPixels": 38,
+        "errors": []
+      },
+      {
+        "mobile": true,
+        "states": [
+          {
+            "name": "window",
+            "near": 0.032660067360616385,
+            "far": 80,
+            "exterior": {
+              "visible": true,
+              "frames": 18,
+              "fade": 0,
+              "portals": [
+                true,
+                true,
+                false
+              ]
+            }
+          },
+          {
+            "name": "cabinet",
+            "near": 0.05486966374965314,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 18,
+              "fade": 0.13291420624138425,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "side",
+            "near": 0.07118286310622804,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 18,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "back",
+            "near": 0.083214181483687,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 18,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "outside-bay",
+            "near": 0.032126624472546134,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 18,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "high",
+            "near": 0.9267855356785635,
+            "far": 80,
+            "exterior": {
+              "visible": false,
+              "frames": 18,
+              "fade": 1,
+              "portals": [
+                false,
+                false,
+                false
+              ]
+            }
+          },
+          {
+            "name": "return-window",
+            "near": 0.032660067360616385,
+            "far": 80,
+            "exterior": {
+              "visible": true,
+              "frames": 40,
+              "fade": 0,
+              "portals": [
+                true,
+                true,
+                false
+              ]
+            }
+          }
+        ],
+        "flickerPixels": 0,
+        "cabinetFlickerPixels": 0,
+        "errors": []
+      }
+    ],
+    "notes": [
+      "Dynamic near/far plane keeps subpixel surfaces stable without zoom caps",
+      "Aperture clips both color and normal passes",
+      "Outside/fully faded/unseen portals stop exterior renders; returning resumes",
+      "Chrome desktop and touch emulation; physical Safari not tested"
     ]
   }
 }
