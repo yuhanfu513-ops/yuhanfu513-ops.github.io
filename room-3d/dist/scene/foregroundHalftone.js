@@ -3,13 +3,16 @@ import {objects} from '../content/objects.js';
 // Measured spatial groups: merged materials can contain unrelated props, so never
 // fade a whole material or trust its first exported source name.
 export const foregroundVolumes=[
- {id:'bookcase',min:[-.01,.18,-2.88],max:[.48,2.85,-.88]},
+ {id:'bookcase',min:[-.01,.18,-2.88],max:[.55,2.90,-.86]},
  {id:'wardrobe',min:[2.70,.18,-4.32],max:[3.53,2.84,-3.48]},
- {id:'headboard',min:[3.29,.34,-1.60],max:[3.54,1.56,-.02]},
+ {id:'headboard',min:[3.22,.30,-1.65],max:[3.58,1.66,.03]},
  {id:'radiatorAndFrame',min:[0,.18,-3.80],max:[.18,2.12,-2.82]},
  {id:'window',min:[1.10,.18,-5.02],max:[2.91,2.84,-3.94]},
- {id:'chestAndPoster',min:[.12,.18,-4.30],max:[1.17,2.65,-3.78]},
- {id:'door',min:[-.10,.30,-.86],max:[1.20,2.35,.18]},
+ {id:'chestAndPoster',min:[.12,.18,-4.30],max:[1.20,2.68,-3.70]},
+ {id:'door',min:[-.18,.08,-.96],max:[1.20,2.35,.18]},
+ {id:'eastWallAttachments',min:[3.42,.12,-4.35],max:[3.70,2.85,.10]},
+ {id:'southWallAttachments',min:[-.18,.12,-.08],max:[3.70,2.85,.18]},
+ {id:'westWallAttachments',min:[-.18,.12,-4.35],max:[.11,2.85,.18]},
  {id:'airConditioner',min:[0,2.30,-3.79],max:[.42,2.70,-2.83]}
 ];
 const protectedIds=['left','desk','bedside','cello','boots','laptop'];
@@ -21,12 +24,12 @@ export function createForegroundUniforms(renderer){return {
 const pars=`
 varying vec3 vHtWorld;
 uniform float htEnabled,htPixelRatio;
-uniform vec3 htMin[8],htMax[8],htProtectedMin[6],htProtectedMax[6];
+uniform vec3 htMin[11],htMax[11],htProtectedMin[6],htProtectedMax[6];
 float htInside(vec3 p,vec3 lo,vec3 hi){return step(lo.x,p.x)*step(lo.y,p.y)*step(lo.z,p.z)*step(p.x,hi.x)*step(p.y,hi.y)*step(p.z,hi.z);}
 float htAmount(vec3 p){
  if(htEnabled<.5)return 0.;
  for(int i=0;i<6;i++){if(htInside(p,htProtectedMin[i],htProtectedMax[i])>.5)return 0.;}
- float eligible=0.;for(int i=0;i<8;i++)eligible=max(eligible,htInside(p,htMin[i],htMax[i]));
+ float eligible=0.;for(int i=0;i<11;i++)eligible=max(eligible,htInside(p,htMin[i],htMax[i]));
  if(eligible<.5)return 0.;
  vec3 view=normalize(cameraPosition-vec3(1.75,.95,-2.15));
  float front=dot(p.xz-vec2(1.75,-2.15),normalize(view.xz));
@@ -56,5 +59,5 @@ export function applyForegroundHalftone(material,uniforms,normal=false){
   if(htFade>.001 && htDistance>htRadius)discard;`);
   if(normal){const end=shader.fragmentShader.lastIndexOf('}');shader.fragmentShader=shader.fragmentShader.slice(0,end)+'\n gl_FragColor.a=1.-htFade*.5;\n'+shader.fragmentShader.slice(end);}
  };
- material.customProgramCacheKey=()=>cache()+'-foreground-benday-v1';material.needsUpdate=true;
+ material.customProgramCacheKey=()=>cache()+'-foreground-benday-v2';material.needsUpdate=true;
 }

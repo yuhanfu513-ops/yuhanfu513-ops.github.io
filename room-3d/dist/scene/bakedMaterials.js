@@ -18,10 +18,10 @@ export function applyBakedMaterial(material){
   if(range&&material.lightMap)shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>',`#include <lights_fragment_end>
   #ifdef USE_LIGHTMAP
    reflectedLight.directDiffuse=vec3(0.);
-   reflectedLight.indirectDiffuse=texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity*diffuseColor.rgb*(1.-metalnessFactor);
+   reflectedLight.indirectDiffuse=${/V4 boot|Shoes /.test(material.name)?'max(texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity,vec3(.48))':'texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity'}*diffuseColor.rgb*(1.-metalnessFactor);
   #endif`);
  };
- material.customProgramCacheKey=()=>oldKey()+'-cycles-irradiance-v1';material.needsUpdate=true;return Boolean(range&&material.lightMap);
+ material.customProgramCacheKey=()=>oldKey()+'-cycles-irradiance-v2-'+(/V4 boot|Shoes /.test(material.name)?'footwear':'room');material.needsUpdate=true;return Boolean(range&&material.lightMap);
 }
 
 export function fitTextureBudget(model,renderer,mobile){

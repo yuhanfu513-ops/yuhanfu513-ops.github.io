@@ -7,3 +7,5 @@ tests/*
 
 !tests/baked-room.mjs
 tools/baked-room/
+
+!tests/fixes.mjs

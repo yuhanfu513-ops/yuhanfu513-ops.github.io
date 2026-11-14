@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-13",
+  "date": "2026-11-14",
   "regression": [
     {
       "mobile": false,
@@ -35,13 +35,13 @@
         "normalMapped": 51
       },
       "textureBudget": {
-        "textures": 105,
+        "textures": 106,
         "resized": 0,
         "maxDimension": 4096
       },
       "stats": {
-        "calls": 937,
-        "triangles": 6150024,
+        "calls": 938,
+        "triangles": 6174388,
         "geometries": 335,
         "textures": 49
       },
@@ -54,13 +54,13 @@
         "normalMapped": 51
       },
       "textureBudget": {
-        "textures": 105,
+        "textures": 106,
         "resized": 4,
         "maxDimension": 2048
       },
       "stats": {
-        "calls": 937,
-        "triangles": 6150024,
+        "calls": 938,
+        "triangles": 6174388,
         "geometries": 335,
         "textures": 47
       },
@@ -97,8 +97,8 @@
   ],
   "originalBlendChanged": false,
   "bakedWebAssetAdded": true,
-  "bakedAssetBytes": 24491612,
-  "bakedAssetSha256": "3ef29f1e0a9d98a50319c7b0e09ac0e260c3d978422135733437a9eee4b4906b",
+  "bakedAssetBytes": 24492344,
+  "bakedAssetSha256": "b4c80f2341e270213755ab1e5bd78bc2474529b4811c60da453a11444cc29a38",
   "visualChecks": [
     "whole room",
     "close view, rabbit faces",
@@ -108,5 +108,17 @@
   "limitations": [
     "Mobile tested by Chrome touch emulation, not physical Safari",
     "Static irradiance; real-time reflections and translucent shade approximate Blender"
-  ]
+  ],
+  "visualFixes": {
+    "redBootPixelsInShowcase": 64261,
+    "browserErrors": [],
+    "checkedViews": [
+      "west",
+      "east",
+      "north",
+      "top"
+    ],
+    "lampChimneyContour": "visible; filament remains visible",
+    "storyRadius": "expanded surrounding furniture and floor"
+  }
 }

@@ -9,10 +9,10 @@ varying vec3 vRoomWorld;
 float wallVisibility(){
  if(vRoomWorld.y>2.77)return 0.;
  float a=0.;
- if(vRoomWorld.x<.04)a=max(a,uWalls.x);
- if(vRoomWorld.x>3.46)a=max(a,uWalls.y);
- if(vRoomWorld.z< -4.26)a=max(a,uWalls.z);
- if(vRoomWorld.z>-.04)a=max(a,uWalls.w);
+ if(vRoomWorld.x<.12)a=max(a,uWalls.x);
+ if(vRoomWorld.x>3.38)a=max(a,uWalls.y);
+ if(vRoomWorld.z< -4.18)a=max(a,uWalls.z);
+ if(vRoomWorld.z>-.12)a=max(a,uWalls.w);
  float lift=smoothstep(.045,.43,vRoomWorld.y);
  float keep=1.-a*lift;
  return keep;
@@ -98,12 +98,20 @@ export class VisualStates{
    const name=o.userData.sourceName||o.name,m=o.material;
    if(o.userData.exterior){o.visible=false;return;}
    const ceiling=/^Ceiling/.test(name)||/Ceiling matte ivory/.test(m.name);
-   const architectural=/Warm ivory painted plaster/.test(m.name)||ceiling||(/Ivory satin joinery_cutaway/.test(m.name));
+   const architectural=o.userData.cutaway||/Warm ivory painted plaster/.test(m.name)||ceiling||(/Ivory satin joinery_cutaway/.test(m.name));
    const normal=new THREE.MeshNormalMaterial({side:m.side});
    if(architectural){o.material=m.clone();injectCut(o.material,this.walls,ceiling);injectCut(normal,this.walls,ceiling);o.castShadow=false;}
    if(!architectural){o.material=m.clone();applyForegroundHalftone(o.material,this.foreground);applyForegroundHalftone(normal,this.foreground,true);}
+   if(m.userData.lampChimney){
+    // Keep the actual transparent chimney in the color pass. Only its grazing
+    // contour writes depth in the ink pass, so the filament remains visible.
+    o.material.opacity=.18;o.material.roughness=.10;
+    const before=normal.onBeforeCompile;
+    normal.onBeforeCompile=shader=>{before(shader);shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_maps>','#include <normal_fragment_maps>\n if(abs(normal.z)>.38)discard;');};
+    normal.customProgramCacheKey=()=> 'glass-chimney-contour-v1';
+   }
    applyBakedMaterial(o.material);
-   this.entries.push({object:o,color:o.material,normal,skip:m.transparent&&m.opacity<.2});
+   this.entries.push({object:o,color:o.material,normal,skip:m.transparent&&m.opacity<.2&&!m.userData.lampChimney});
   });
   const ls=['left','desk','bedside'],ss=['cello','boots','laptop'];
   this.uniforms={blenderLookLut:blenderLookTexture,toneMappingExposure:{value:renderer.toneMappingExposure},fullColor:{value:0},tColor:{value:this.colorRT.texture},tNormal:{value:this.normalRT.texture},tDepth:{value:this.normalRT.depthTexture},invProjection:{value:camera.projectionMatrixInverse},camWorld:{value:camera.matrixWorld},pixel:{value:new THREE.Vector2()},viewport:{value:new THREE.Vector2()},time:{value:0},debugView:{value:0},modal:{value:0},zoneCenter:{value:ls.map(k=>new THREE.Vector3(...objects[k].zone))},zoneRadius:{value:ls.map(k=>new THREE.Vector3(...objects[k].radius))},storyCenter:{value:ss.map(k=>new THREE.Vector3(...objects[k].anchor))},storyRadius:{value:ss.map(k=>new THREE.Vector3(...objects[k].radius))},lit:{value:new THREE.Vector3()},explored:{value:new THREE.Vector3()}};
