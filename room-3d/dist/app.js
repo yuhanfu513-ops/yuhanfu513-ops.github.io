@@ -7,7 +7,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {createStore} from './interaction/store.js';
+import {createStore,progressSteps} from './interaction/store.js';
 import {objects} from './content/objects.js';
 import {stories} from './content/stories.js';
 import {loadReceiverLights,disposeReceiverLights} from './scene/receiverLights.js';
@@ -26,7 +26,28 @@ const zoneBoxes=Object.fromEntries(['left','desk','bedside'].map(id=>{const s=ob
 const buttons=new Map(),menus=new Map(),cursor=$('#cursor'),lampIds=['left','desk','bedside'],storyIds=['cello','boots','laptop'];
 const panel=setupStoryPanel(store,id=>{setHover(null);closing=false;controls&&(controls.enabled=false);presentationObject=null;dirty=true},()=>{closing=true;controls&&(controls.enabled=true);dirty=true});
 function interact(id,source){if(id==='curtain'){store.openCurtain();$('#status').textContent='窗帘正在打开，阳光慢慢照进房间。';dirty=true;return;}if(fullRoom&&stories[id])store.light(stories[id].unlockLight);if(objects[id]?.type==='lamp'){store.light(id);$('#status').textContent=objects[id].label+'已点亮';dirty=true}else panel.open(id,source)}
+const progressNodes=new Map();
+for(const step of progressSteps){
+ const item=document.createElement('li'),button=document.createElement('button');
+ button.type='button';button.dataset.step=step.id;
+ button.innerHTML='<span class="progress-dot" aria-hidden="true"></span><span class="progress-label"></span>';
+ button.querySelector('.progress-label').textContent=step.label;
+ button.addEventListener('click',()=>{
+  if(!store.goTo(step.id))return;
+  curtain?.restore(state.curtainOpened);
+  if(step.type==='story')panel.open(step.id,button);
+  $('#status').textContent='已返回'+step.label;
+  dirty=true;
+ });
+ item.append(button);$('#story-progress ol').append(item);progressNodes.set(step.id,button);
+}
 function updateUI(){
+ for(const step of progressSteps){
+  const button=progressNodes.get(step.id),visited=Boolean(state.history[step.id]),current=state.currentStep===step.id;
+  button.disabled=!visited;button.classList.toggle('visited',visited);button.classList.toggle('current',current);
+  if(current)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');
+  button.setAttribute('aria-label',step.label+(current?'，当前进度':visited?'，返回此进度':'，尚未到达'));
+ }
  $('#progress-count').textContent=String(state.exploredObjects.size).padStart(2,'0')+' / 03';$('#help').hidden=!state.helpUnlocked;document.body.classList.toggle('started',state.illuminatedLights.size>0);
  $('#invitation').textContent=state.helpUnlocked?'你已经认识了我的三个故事。':state.illuminatedLights.size?'点开被灯光照亮的物品。':'找到一盏灯，慢慢认识我。';
  for(const [id,b]of buttons){const isStory=objects[id].type==='story',unlocked=!isStory||fullRoom||state.illuminatedLights.has(stories[id].unlockLight);b.disabled=!unlocked;b.classList.toggle('visited',state.exploredObjects.has(id));if(!isStory)b.setAttribute('aria-pressed',String(state.illuminatedLights.has(id)));menus.get(id).disabled=!unlocked;}
@@ -85,7 +106,8 @@ addEventListener('keydown',e=>{if(e.key.toLowerCase()==='r'&&!state.activeStory)
 function updateCursor(dt){if(touch)return;const a=reduced?1:1-Math.exp(-28*dt);cursorX+=(pointerX-cursorX)*a;cursorY+=(pointerY-cursorY)*a;cursor.style.left=cursorX+'px';cursor.style.top=cursorY+'px';const show=Boolean(!state.activeStory&&hoverId&&(!stories[hoverId]||fullRoom||state.illuminatedLights.has(stories[hoverId].unlockLight)));state.pointerMode=show?'circle':'default';cursor.classList.toggle('shown',show);document.body.classList.toggle('custom-cursor',show);}
 function requestFrame(){raf=requestAnimationFrame(frame)}
 function frame(ms){requestFrame();if(paused)return;const t=ms/1000,dt=Math.min(t-lastTime,.05);lastTime=t;const changed=controls.update(dt);updateCameraClipping(camera,controls.target);updateCursor(dt);
- const anim=curtain?.moving||fullRoom||state.illuminatedLights.size>0||state.activeStory;
+ const lightsTransitioning=lights.some(light=>Math.abs(light.intensity-((fullRoom||state.illuminatedLights.has(light.userData.id))?light.userData.base:0))>.001);
+ const anim=curtain?.moving||fullRoom||state.illuminatedLights.size>0||state.activeStory||lightsTransitioning;
  if(!dirty&&!changed&&!anim)return;if(!dirty&&!changed&&t-lastRender<(mobile?1/30:1/45))return;lastRender=t;
  curtain.update(dt,state.curtainOpened);sun.intensity=1.3*daylight.value;skyFill.intensity=.02+.63*daylight.value;ambientFill.intensity=.015+.235*daylight.value;scene.environmentIntensity=.035+.415*daylight.value;visual.update(t,dt,state);for(const l of lights)l.intensity=THREE.MathUtils.damp(l.intensity,(fullRoom||state.illuminatedLights.has(l.userData.id))?l.userData.base:0,5,dt);
  for(const [index,light] of lights.entries())nightLamps.value.setComponent(index,light.intensity/light.userData.base);

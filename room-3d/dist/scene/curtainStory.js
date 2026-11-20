@@ -36,5 +36,9 @@ export function createCurtainStory(model,opened=false){
   }
  }
  update(0,opened);
- return {update,stats:()=>({progress,daylight:daylight.value,parts:parts.length,opened:active}),get moving(){return active&&daylight.value<.999;}};
+ function restore(open){
+  active=open;started=open?performance.now()-4800:null;elapsed=open?4.8:0;progress=open?1:0;lastElapsed=-1;
+  update(0,open);
+ }
+ return {update,restore,stats:()=>({progress,daylight:daylight.value,parts:parts.length,opened:active}),get moving(){return active&&daylight.value<.999;}};
 }
