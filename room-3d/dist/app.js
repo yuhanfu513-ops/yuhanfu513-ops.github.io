@@ -33,6 +33,7 @@ for(const step of progressSteps){
  button.innerHTML='<span class="progress-dot" aria-hidden="true"></span><span class="progress-label"></span>';
  button.querySelector('.progress-label').textContent=step.label;
  button.addEventListener('click',()=>{
+  if(fullRoom)setFullRoom(false);
   if(!store.goTo(step.id))return;
   curtain?.restore(state.curtainOpened);
   if(step.type==='story')panel.open(step.id,button);
