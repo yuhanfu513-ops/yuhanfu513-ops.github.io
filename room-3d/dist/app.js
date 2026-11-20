@@ -10,6 +10,7 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {createStore} from './interaction/store.js';
 import {objects} from './content/objects.js';
 import {stories} from './content/stories.js';
+import {loadReceiverLights,disposeReceiverLights} from './scene/receiverLights.js';
 import {loadBlenderLook} from './scene/blenderLook.js';
 import {applyBakedMaterial,fitTextureBudget} from './scene/bakedMaterials.js';
 import {VisualStates} from './scene/visualStates.js';
@@ -54,7 +55,7 @@ try{
  const env=new RoomEnvironment(),pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(env,.04).texture;scene.environmentIntensity=.45;env.dispose();pmrem.dispose();
  skyFill=new THREE.HemisphereLight('#e4eeff','#a08b6b',.02);ambientFill=new THREE.AmbientLight('#fff1dc',.015);scene.add(skyFill,ambientFill);
  sun=new THREE.DirectionalLight('#fff0d7',1.3);sun.position.set(2.4,4.6,-8);sun.target.position.set(1.2,0,-.6);sun.castShadow=!mobile;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:.1,far:20});sun.shadow.bias=-.0002;sun.shadow.normalBias=.001;scene.add(sun,sun.target);
- await loadBlenderLook();
+ await Promise.all([loadBlenderLook(),loadReceiverLights(mobile)]);
  const meta=await fetch('./assets/room-meta.json').then(r=>r.json());
  const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);const gltf=await loader.loadAsync(new URLSearchParams(location.search).has('legacy')?'./assets/room-v9.glb':'./assets/room-baked.glb',e=>{$('#load-bar').style.width=Math.min(92,e.total?e.loaded/e.total*92:e.loaded/112000)+'%'});model=gltf.scene;scene.add(model);
  model.traverse(o=>{if(!o.isMesh)return;const m=o.material;o.castShadow=!o.userData.exterior;o.receiveShadow=true;if(!m.userData.bakedIrradiance&&/warm taupe looped plush/i.test(m.name)){m.map=null;m.color.setRGB(.245,.20,.13);m.roughness=.94}if(/clear window panes/i.test(m.name)){m.transparent=true;m.opacity=.07;m.color.set('#c6dddf');m.roughness=.15;m.metalness=.1;if('transmission'in m)m.transmission=0}if(/bunny|plush|softly blended|soft cream face|pink face/i.test(m.name)){o.castShadow=false;o.receiveShadow=false}if(m.transparent||m.opacity<.7){o.castShadow=false;m.depthWrite=false;m.side=THREE.DoubleSide}if(m.map)m.map.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy())});
@@ -86,12 +87,13 @@ function requestFrame(){raf=requestAnimationFrame(frame)}
 function frame(ms){requestFrame();if(paused)return;const t=ms/1000,dt=Math.min(t-lastTime,.05);lastTime=t;const changed=controls.update(dt);updateCameraClipping(camera,controls.target);updateCursor(dt);
  const anim=curtain?.moving||fullRoom||state.illuminatedLights.size>0||state.activeStory;
  if(!dirty&&!changed&&!anim)return;if(!dirty&&!changed&&t-lastRender<(mobile?1/30:1/45))return;lastRender=t;
- curtain.update(dt,state.curtainOpened);sun.intensity=1.3*daylight.value;skyFill.intensity=.02+.63*daylight.value;ambientFill.intensity=.015+.235*daylight.value;scene.environmentIntensity=.035+.415*daylight.value;nightLamps.value.set(...lampIds.map(id=>(fullRoom||state.illuminatedLights.has(id))?1:0));visual.update(t,dt,state);for(const l of lights)l.intensity=THREE.MathUtils.damp(l.intensity,(fullRoom||state.illuminatedLights.has(l.userData.id))?l.userData.base:0,5,dt);
+ curtain.update(dt,state.curtainOpened);sun.intensity=1.3*daylight.value;skyFill.intensity=.02+.63*daylight.value;ambientFill.intensity=.015+.235*daylight.value;scene.environmentIntensity=.035+.415*daylight.value;visual.update(t,dt,state);for(const l of lights)l.intensity=THREE.MathUtils.damp(l.intensity,(fullRoom||state.illuminatedLights.has(l.userData.id))?l.userData.base:0,5,dt);
+ for(const [index,light] of lights.entries())nightLamps.value.setComponent(index,light.intensity/light.userData.base);
  renderer.info.reset();exterior?.render(renderer,camera);visual.render();renderer.autoClear=false;renderer.clearDepth();
  basic.traverse(o=>{if(o.userData.glow){o.visible=fullRoom||state.illuminatedLights.has(o.userData.id);o.material.opacity=fullRoom?1:visual.uniforms.lit.value.getComponent(lampIds.indexOf(o.userData.id))}else if(o.isMesh){const id=o.userData.id;o.visible=!fullRoom&&!state.illuminatedLights.has(id)}});renderer.render(basic,camera);renderer.autoClear=true;updateHotspots();
  if(state.activeStory&&state.activeStory!=='help'&&presentationObject){const rect=$('#showcase').getBoundingClientRect();renderer.setScissorTest(true);renderer.setScissor(rect.left,innerHeight-rect.bottom,rect.width,rect.height);renderer.setViewport(rect.left,innerHeight-rect.bottom,rect.width,rect.height);renderer.autoClear=false;renderer.clearDepth();presentationObject.rotation.y=reduced?0:Math.sin(t*.24)*.08;presentationObject.position.y=reduced?0:Math.sin(t*.55)*.008;renderer.render(presentationScene,presentationCamera);renderer.autoClear=true;renderer.setScissorTest(false);renderer.setViewport(0,0,innerWidth,innerHeight)}
  dirty=false;
 }
 document.addEventListener('visibilitychange',()=>{paused=document.hidden;if(!paused){lastTime=performance.now()/1000;dirty=true}});
-addEventListener('pagehide',e=>{if(e.persisted){paused=true;return}cancelAnimationFrame(raf);panel.dispose();controls?.dispose();visual?.dispose();exterior?.dispose();if(scene){const gs=new Set(),ms=new Set(),ts=new Set();scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material){for(const m of Array.isArray(o.material)?o.material:[o.material]){ms.add(m);for(const v of Object.values(m))if(v?.isTexture)ts.add(v)}}});gs.forEach(g=>g.dispose());ms.forEach(m=>m.dispose());ts.forEach(t=>t.dispose());scene.environment?.dispose()}renderer?.dispose()});
+addEventListener('pagehide',e=>{if(e.persisted){paused=true;return}cancelAnimationFrame(raf);panel.dispose();controls?.dispose();visual?.dispose();exterior?.dispose();if(scene){const gs=new Set(),ms=new Set(),ts=new Set();scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material){for(const m of Array.isArray(o.material)?o.material:[o.material]){ms.add(m);for(const v of Object.values(m))if(v?.isTexture)ts.add(v)}}});gs.forEach(g=>g.dispose());ms.forEach(m=>m.dispose());ts.forEach(t=>t.dispose());scene.environment?.dispose()}disposeReceiverLights();renderer?.dispose()});
 addEventListener('pageshow',e=>{if(e.persisted){paused=false;dirty=true}});

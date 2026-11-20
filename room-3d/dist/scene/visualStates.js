@@ -79,6 +79,15 @@ void main(){
  float daylightZone=zone(world,vec3(2.,1.,-3.),vec3(2.1,1.9,2.7))*roomDaylight;
  reveal=max(reveal,daylightZone);colorMask=max(colorMask,daylightZone);
  float fill=(.018+.025*max(n.z,.0));
+ // Preserve the light and shadow in the monochrome story state as well.
+ bool floorOrBay=(world.y>.018 && world.y<.027) ||
+   (world.z< -4.229 && world.z> -4.27 && world.y<.82 && world.x>1.04 && world.x<2.86);
+ if(floorOrBay){
+   float floorLuma=dot(color,vec3(.2126,.7152,.0722));
+   fill=.003+.9*floorLuma;
+   float activeLamp=max(lit.x,max(lit.y,lit.z));
+   reveal=max(reveal,activeLamp*smoothstep(.001,.035,floorLuma));
+ }
  vec3 ink=vec3(fill+edge*.78);
  vec3 outColor=mix(ink*reveal,color,max(colorMask,fullColor*(1.-curtainArea*(1.-roomDaylight))));
  if(length(n)<.01)outColor=color;

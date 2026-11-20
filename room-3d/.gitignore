@@ -15,3 +15,5 @@ tools/baked-room/
 !tests/window-stability.mjs
 
 !tests/curtain.mjs
+
+!tests/receiver-lights.mjs

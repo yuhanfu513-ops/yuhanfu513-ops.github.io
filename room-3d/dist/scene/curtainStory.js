@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {aperture} from './receiverLights.js';
 import {daylight} from './daylight.js';
 export function createCurtainStory(model,opened=false){
  const parts=[];model.updateMatrixWorld(true);
@@ -14,6 +15,7 @@ export function createCurtainStory(model,opened=false){
   active ||= wanted;
   if(active&&started===null)started=performance.now();
   elapsed=active?Math.min(4.8,(performance.now()-started)/1000):0;progress=smooth(Math.min(1,elapsed/4.2));
+  aperture.value=progress;
   daylight.value=smooth(THREE.MathUtils.clamp((elapsed-.4)/4.3,0,1));
   // Finish the light transition after the hand movement has settled.
   if(progress===1)daylight.value=THREE.MathUtils.damp(daylight.value,1,3,dt);

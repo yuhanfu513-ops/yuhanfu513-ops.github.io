@@ -1,8 +1,10 @@
+import {applyReceiverLights,receiverKind} from './receiverLights.js';
 import {daylight,nightLamps} from './daylight.js';
 import {blenderLookTexture,blenderLookGLSL} from './blenderLook.js';
 // Irradiance is baked in Cycles with the source daylight, warm lamps and bounce
 // lighting. Keep it separate from albedo and normals; moving highlights stay PBR.
 export function applyBakedMaterial(material){
+ const kind=receiverKind(material.name);
  const range=material.userData.bakedIrradiance;
  if(typeof material.userData.sourceSheenWeight==='number'&&'sheen' in material)material.sheen=material.userData.sourceSheenWeight;
 
@@ -33,8 +35,9 @@ export function applyBakedMaterial(material){
    warmNight+=vec3(1.,.55,.22)*nightLamps.z*.26/(.08+pow(distance(vLightingWorld,vec3(3.23,1.29,-1.74)),2.));
    reflectedLight.indirectDiffuse=mix(warmNight,${/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'max(texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity,vec3(.48))':'texture2D(lightMap,vLightMapUv).rgb*lightMapIntensity'},roomDaylight)*diffuseColor.rgb*(1.-metalnessFactor);
   #endif`);
+  if(kind && range && material.lightMap)applyReceiverLights(shader,kind);
  };
- material.customProgramCacheKey=()=>oldKey()+'-cycles-night-day-v3-'+(/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'footwear':'room');material.needsUpdate=true;return Boolean(range&&material.lightMap);
+ material.customProgramCacheKey=()=>oldKey()+'-receiver-lights-v1-'+kind+'-'+(/V4 boot|Shoes |Storage warm white lacquer|Storage raised moulding|Ivory satin joinery/.test(material.name)?'footwear':'room');material.needsUpdate=true;return Boolean(range&&material.lightMap);
 }
 
 export function fitTextureBudget(model,renderer,mobile){

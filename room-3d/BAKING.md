@@ -32,8 +32,23 @@
 
 ## 限制
 
-烘焙光照固定为源场景的日光与三灯开启状态，探索模式使用遮罩控制显现，不实时重新计算全局光照。玻璃折射、布灯透光、移动高光与 Blender 路径追踪仍有差异。颜色与法线采用图集压缩；不承诺逐像素一致。手机验收是桌面 Chrome 触摸视口模拟。
+木地板和滑板后方的窗台柜面使用逐灯光照。其余表面沿用原有光照贴图和故事显色过渡。玻璃折射、布灯透光、移动高光与 Blender 路径追踪仍有差异。颜色与法线采用图集压缩；不承诺逐像素一致。手机验收是桌面 Chrome 触摸视口模拟。
 
 ## 2026-11-14 显示修复
 
 保留独立玻璃灯罩材质，在线稿深度中只显示掠射轮廓，避免挡住灯丝。红鞋面恢复源线性红色，保留法线；鞋盒内烘焙阴影增加最低间接照度补偿，避免鞋子发灰。扩充柜体把手、墙面附件与门板的遮挡范围，使用导出 cutaway 元数据识别建筑边条。故事彩色范围扩大到周围陈设，灯和故事目标仍受保护。
+
+## 木地板与窗台柜面的分层光照
+
+三盏灯各自保存 Cycles 的直接光、反弹光和场景投影。窗光取实际开度 0%、25%、50%、75%、100%。网页按各灯当前亮度求和，再按窗帘的实际开度插值。地板和柜面在同一张纹理里占用独立区域，各自降噪。木板间的纹理接缝不影响投影位置。
+
+以下命令从网站目录执行。将 ROOM_BLEND 设为 V9 原始 Blender 文件的路径，将 BAKE_DIR 设为空的中间产物目录。打包脚本使用 Blender 自带的 macOS Open Image Denoise 和 Python 的 NumPy、Pillow。
+
+```sh
+blender -b "$ROOM_BLEND" -P tools/bake_receiver_lights.py -- "$BAKE_DIR"
+blender -b "$ROOM_BLEND" -P tools/bake_receiver_lights.py -- "$BAKE_DIR" --sun-masks
+blender -b "$ROOM_BLEND" -P tools/bake_receiver_lights.py -- "$BAKE_DIR" --ambient-visibility
+python3 tools/pack_receiver_lights.py "$BAKE_DIR" dist/assets
+```
+
+单张 WebP 的 RGB 通道保存对数编码的照度，各层的透明通道分别保存日光可见度或局部环境遮挡。桌面每层为 1024 × 1280，手机每层为 512 × 640。木地板的太阳高光系数为 0.8。三盏暖灯继续使用原来的高光参数。移动家具或调整太阳方向后需要重新烘焙。
