@@ -18,7 +18,7 @@ import {createRegistry,simpleLamps} from './scene/objectRegistry.js';
 import {setupStoryPanel} from './ui/storyPanel.js';
 const $=s=>document.querySelector(s),mobile=matchMedia('(max-width:700px)').matches,touch=matchMedia('(pointer:coarse)').matches,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const store=createStore(),state=store.state,api={loaded:false,errors:[],state:()=>store.snapshot()};window.roomExplorer=api;
-let curtain,sun,skyFill,ambientFill,exterior,renderer,scene,camera,controls,model,visual,registry,basic,lights=[],presentationScene,presentationCamera,presentationObject=null,dirty=true,raf=0,lastTime=0,lastRender=0,paused=false,closing=false;
+let curtain,sun,skyFill,ambientFill,exterior,renderer,scene,camera,controls,model,visual,registry,basic,unlitLamps,lights=[],presentationScene,presentationCamera,presentationObject=null,dirty=true,raf=0,lastTime=0,lastRender=0,paused=false,closing=false;
 let fullRoom=false;
 let pointerX=-200,pointerY=-200,cursorX=-200,cursorY=-200,pressed=false,hoverId=null,dragStart=null;
 const center=new THREE.Vector3(1.75,.95,-2.15),projected=new THREE.Vector3(),pointer=new THREE.Vector2(),ray=new THREE.Raycaster(),hitPoint=new THREE.Vector3();
@@ -85,7 +85,7 @@ try{
  const bakedSet=new Set();model.traverse(o=>{if(o.isMesh&&!bakedSet.has(o.material)){applyBakedMaterial(o.material);bakedSet.add(o.material)}});
  curtain=createCurtainStory(model,state.curtainOpened);registry=createRegistry(model);exterior=createWindowExterior(model);
  for(const id of lampIds){const word=id==='left'?'chest amber':id==='desk'?'desk task':'bedside 2700K',spec=meta.lamps.find(l=>l.name.includes(word));const l=new THREE.PointLight('#ffb067',0,4,2);l.position.fromArray(spec.position);l.userData.id=id;l.userData.base=id==='desk'?4:id==='left'?2:3;scene.add(l);lights.push(l)}
- visual=new VisualStates(renderer,scene,camera,model,mobile);exterior.bindVisibility(visual.walls,visual.foreground);basic=new THREE.Scene();basic.add(simpleLamps());basic.background=null;
+ visual=new VisualStates(renderer,scene,camera,model,mobile);exterior.bindVisibility(visual.walls,visual.foreground);basic=new THREE.Scene();unlitLamps=simpleLamps();basic.add(unlitLamps);basic.background=null;
  const glowCanvas=document.createElement('canvas');glowCanvas.width=64;glowCanvas.height=64;const ctx=glowCanvas.getContext('2d'),gradient=ctx.createRadialGradient(32,32,0,32,32,32);gradient.addColorStop(0,'rgba(255,207,132,1)');gradient.addColorStop(.12,'rgba(255,173,78,.8)');gradient.addColorStop(.45,'rgba(255,141,55,.18)');gradient.addColorStop(1,'rgba(255,141,55,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,64,64);const glowTexture=new THREE.CanvasTexture(glowCanvas);for(const id of lampIds){const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture,transparent:true,depthTest:false,depthWrite:false,toneMapped:false}));sprite.position.set(...objects[id].anchor);sprite.scale.setScalar(id==='left'?.20:.25);sprite.userData={id,glow:true};basic.add(sprite)}
  presentationScene=new THREE.Scene();presentationScene.environment=scene.environment;presentationScene.environmentIntensity=.7;presentationScene.add(new THREE.HemisphereLight('#fff1d8','#7a6c5d',2));const key=new THREE.DirectionalLight('#ffe1b1',3);key.position.set(-3,4,5);presentationScene.add(key);presentationCamera=new THREE.PerspectiveCamera(34,1,.01,20);
  resize();$('#load-text').textContent='正在准备灯光与故事…';$('#load-bar').style.width='97%';await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;exterior?.render(renderer,camera);visual.render();api.loaded=true;document.body.dataset.ready='true';$('#loading').classList.add('done');
@@ -97,7 +97,17 @@ function resize(){if(!renderer)return;camera.aspect=innerWidth/innerHeight;camer
 addEventListener('resize',resize);
 function updateHotspots(){for(const [id,b]of buttons){projected.copy(registry[id].anchor).project(camera);const visible=projected.z<1&&Math.abs(projected.x)<1.05&&Math.abs(projected.y)<1.05&&!b.disabled;b.hidden=!visible||(id==='curtain'&&state.curtainOpened);b.style.left=(projected.x*.5+.5)*innerWidth+'px';b.style.top=(-projected.y*.5+.5)*innerHeight+'px'}}
 // Only interactive targets take part in picking; foreground ink dots never intercept clicks.
-function pick(e){if(!registry||state.activeStory)return null;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);let nearest=Infinity,id=null;
+function pick(e){if(!registry||state.activeStory)return null;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);
+ // The visible unlit lamp itself is the most precise target, even when
+ // another object's larger interaction box overlaps it in projection.
+ if(unlitLamps){
+  const hit=ray.intersectObject(unlitLamps,true).find(result=>{
+   const id=result.object.userData.lampId;
+   return id&&!fullRoom&&!state.illuminatedLights.has(id)&&result.object.parent.visible;
+  });
+  if(hit)return hit.object.userData.lampId;
+ }
+ let nearest=Infinity,id=null;
  for(const [key,spec]of Object.entries(objects)){if(spec.type==='story'&&!fullRoom&&!state.illuminatedLights.has(stories[key].unlockLight))continue;if(key==='curtain'&&state.curtainOpened)continue;const box=registry[key].box;if(ray.ray.intersectBox(box,hitPoint)){const d=ray.ray.origin.distanceToSquared(hitPoint);if(d<nearest){nearest=d;id=key}}}return id;}
 addEventListener('pointermove',e=>{pointerX=e.clientX;pointerY=e.clientY;if(!visual||state.activeStory)return;if(e.target===renderer.domElement)setHover(pick(e));else if(!e.target.closest('.hotspot'))setHover(null)},{passive:true});
 addEventListener('pointerdown',e=>{pressed=true;cursor.classList.add('pressed');dragStart={x:e.clientX,y:e.clientY,target:e.target}});
@@ -113,7 +123,8 @@ function frame(ms){requestFrame();if(paused)return;const t=ms/1000,dt=Math.min(t
  curtain.update(dt,state.curtainOpened);sun.intensity=1.3*daylight.value;skyFill.intensity=.02+.63*daylight.value;ambientFill.intensity=.015+.235*daylight.value;scene.environmentIntensity=.035+.415*daylight.value;visual.update(t,dt,state);for(const l of lights)l.intensity=THREE.MathUtils.damp(l.intensity,(fullRoom||state.illuminatedLights.has(l.userData.id))?l.userData.base:0,5,dt);
  for(const [index,light] of lights.entries())nightLamps.value.setComponent(index,light.intensity/light.userData.base);
  renderer.info.reset();exterior?.render(renderer,camera);visual.render();renderer.autoClear=false;renderer.clearDepth();
- basic.traverse(o=>{if(o.userData.glow){o.visible=fullRoom||state.illuminatedLights.has(o.userData.id);o.material.opacity=fullRoom?1:visual.uniforms.lit.value.getComponent(lampIds.indexOf(o.userData.id))}else if(o.isMesh){const id=o.userData.id;o.visible=!fullRoom&&!state.illuminatedLights.has(id)}});renderer.render(basic,camera);renderer.autoClear=true;updateHotspots();
+ for(const lamp of unlitLamps.children)lamp.visible=!fullRoom&&!state.illuminatedLights.has(lamp.userData.lampId);
+ basic.traverse(o=>{if(o.userData.glow){o.visible=fullRoom||state.illuminatedLights.has(o.userData.id);o.material.opacity=fullRoom?1:visual.uniforms.lit.value.getComponent(lampIds.indexOf(o.userData.id))}});renderer.render(basic,camera);renderer.autoClear=true;updateHotspots();
  if(state.activeStory&&state.activeStory!=='help'&&presentationObject){const rect=$('#showcase').getBoundingClientRect();renderer.setScissorTest(true);renderer.setScissor(rect.left,innerHeight-rect.bottom,rect.width,rect.height);renderer.setViewport(rect.left,innerHeight-rect.bottom,rect.width,rect.height);renderer.autoClear=false;renderer.clearDepth();presentationObject.rotation.y=reduced?0:Math.sin(t*.24)*.08;presentationObject.position.y=reduced?0:Math.sin(t*.55)*.008;renderer.render(presentationScene,presentationCamera);renderer.autoClear=true;renderer.setScissorTest(false);renderer.setViewport(0,0,innerWidth,innerHeight)}
  dirty=false;
 }

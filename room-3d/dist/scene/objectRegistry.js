@@ -51,7 +51,12 @@ export function createRegistry(model){
 }
 export function simpleLamps(){
  const group=new THREE.Group(),mat=new THREE.MeshBasicMaterial({color:'#b8b3aa'});
- function mesh(g,p,id){const m=new THREE.Mesh(g,mat.clone());m.position.set(...p);m.userData.id=id;group.add(m);return m}
+ const lamps={};
+ for(const id of ['left','desk','bedside']){
+  const parts=new THREE.Group();parts.name='Unlit lamp '+id;parts.userData.lampId=id;
+  lamps[id]=parts;group.add(parts);
+ }
+ function mesh(g,p,id){const m=new THREE.Mesh(g,mat);m.position.set(...p);m.userData.lampId=id;lamps[id].add(m);return m}
  mesh(new THREE.CylinderGeometry(.06,.07,.08,12),[.90,1.55,-4.03],'left');
  mesh(new THREE.CapsuleGeometry(.045,.16,4,12),[.90,1.72,-4.03],'left');
  mesh(new THREE.CylinderGeometry(.09,.10,.025,16),[3.23,.83,-1.74],'bedside');
